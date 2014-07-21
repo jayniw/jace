@@ -1,0 +1,5 @@
+/.svn/
+/var/
+/vendor/
+composer.lock
+
