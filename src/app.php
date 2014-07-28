@@ -5,6 +5,7 @@ use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\UrlGeneratorServiceProvider;
 use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
+use Silex\Provider\SessionServiceProvider;
 
 $app = new Application();
 $app->register(new UrlGeneratorServiceProvider());
@@ -16,8 +17,8 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 
     return $twig;
 }));
-
-$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+$app->register(new SessionServiceProvider());
+/*$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options'    => array(
       'driver'        => 'pdo_odb',
       'host'          => 'localhost',
@@ -27,7 +28,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
       'charset'       => 'utf8',
       'driverOptions' => array(1002 => 'SET NAMES utf8',),
     ),
-  ));
+  ));*/
    
   /*$app->register(new Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider, array(
       "orm.em.options" => array(

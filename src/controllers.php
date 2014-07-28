@@ -8,17 +8,46 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
-$app->get('/', 
+/*$app->get('/', 
           function () use ($app) {
             return $app['twig']->render('index.html', array());
           })
-      ->bind('homepage');
-
-/*$app->post('/',
-           function (Request $request) use ($app){
-             return $app['twig']->render('index.html', array($request));
-           })
       ->bind('homepage');*/
+
+$app->match('/',
+           function (Request $request) use ($app){
+            $error=array();
+            if ($request->get('logout')){
+              $app['session']->clear();
+            }
+            if ($request->get('login')){
+              $login= $request->get('login');
+              /*conectar a AD*/
+              try{
+                $adldap = new adLDAP\adLDAP(array('account_suffix' => "@nuevatel.net",
+                                                  'base_dn' => "DC=nuevatel,DC=net",
+                                                  'domain_controllers' => array ("10.40.3.97:389",
+                                                                                 "adserverlpz.nuevatel.net:389")));
+              }
+              catch (adLDAPException $e) {
+                  $error['ldap']=$e;
+                  exit();   
+              }
+              /*autenticar en AD*/
+              if ($adldap->authenticate($login['_username'],$login['_password'])) {
+                $app['session']->start();
+                $sec=new Seguridad\seguridad();
+                $rol=$sec->getRol($login['_username']);
+                $app['session']->set('user',array('username'=>$login['_username'],
+                                                  'userrol'=>$rol));
+              } else {
+                $error['login']='Usuario o contraseña incorrecto.';
+              }
+              $adldap->close();
+            }
+            return $app['twig']->render('index.html', array('error'=>$error));
+           })
+      ->bind('homepage');
 
 $app->error(function (\Exception $e, $code) use ($app) {
     if ($app['debug']) {
