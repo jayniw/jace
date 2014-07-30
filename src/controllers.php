@@ -49,6 +49,18 @@ $app->match('/',
            })
       ->bind('homepage');
 
+$app->get('/db', 
+          function () use ($app) {
+            $sql="SELECT EC_BILL_STATUS,EC_CRM_STATUS,count(*) c
+                    from itjduran.dc_imagen_201407
+                   where EC_BILL_STATUS<>EC_CRM_STATUS
+                   group by EC_BILL_STATUS,EC_CRM_STATUS
+                   order by c desc";
+            $rows=$app['db']->fetchAll($sql);
+            return $app['twig']->render('db.html', array('hoy'=>$rows));
+          })
+      ->bind('db');
+
 $app->error(function (\Exception $e, $code) use ($app) {
     if ($app['debug']) {
         return;

@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}Base de Datos{% endblock %}
+{% use "navbar.html" %}
+
+{% block content %}
+  <div id="content">
+    <h1>DIFERENCIA DE ESTADOS ENTIDADES CONSUMO</h1>
+    <h4>En base a la imagen generada para el periodo 201407 se evalua los estados a nivel entidad consumo entre BILLING y CRM.</h4>
+    <table id="mon" align="center">
+      <tr>
+       <th>BILLING</th>
+       <th>CRM</th>
+       <th>CANTIDAD</th> 
+      </tr>
+      {% for item in hoy %}
+      <tr>
+       <td>{{ item.EC_BILL_STATUS }}</td>
+       <td>{{ item.EC_CRM_STATUS }}</td>
+       <td>{{ item.C }}</td> 
+      </tr>  
+      {% endfor %}
+    </table>
+  </div>  
+{% endblock %}
+
+

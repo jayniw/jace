@@ -5,17 +5,32 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title '' %} - BILLING</title>
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" media="screen">
-    <!-- librerías opcionales que activan el soporte de HTML5 para IE8 -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <script type="text/javascript" src="jquery/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    {% block stylesheets %}
+    <!-- <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" media="screen"> -->
+    <link rel="stylesheet" href="/theme/layout.css">
+    {% endblock %}
   </head>
   <body>
     {% block navbar %}{% endblock %}
-    {% block content %}{% endblock %}
+    <div id="sideLeft">
+      {% if app.session.get('user').username is defined %}
+        {% embed "menu.html" with {'rol':app.session.get('user').userrol} %}
+      {% endembed %}
+      {% endif %}
+    </div>
+    <div id="wrapper">
+      <div id="middle">
+        {% block content %}{% endblock %}
+        {% block javascripts %}
+          <!-- librerías opcionales que activan el soporte de HTML5 para IE8 -->
+          <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+          <![endif]-->
+        <script type="text/javascript" src="/jquery/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+        {% endblock %}
+      </div>
+    </div>
   </body>
 </html>

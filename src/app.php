@@ -17,18 +17,22 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 
     return $twig;
 }));
+
 $app->register(new SessionServiceProvider());
-/*$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-    'db.options'    => array(
-      'driver'        => 'pdo_odb',
-      'host'          => 'localhost',
-      'dbname'        => 'jace',
-      'user'          => 'jace',
-      'password'      => 'jace',
-      'charset'       => 'utf8',
-      'driverOptions' => array(1002 => 'SET NAMES utf8',),
-    ),
-  ));*/
+
+$app->register(new Silex\Provider\DoctrineServiceProvider(), 
+                   array('db.options'    => array(
+                              'driver'        => 'pdo_oci',
+                              'host'          => '10.49.5.110',
+                              'port'          => '1521',
+                              'servicename'   => 'CTL',
+                              'dbname'        => 'CTL',
+                              'user'          => 'itjduran',
+                              'password'      => 'jduran2014it',
+                              'charset'       => 'utf8'
+                              )
+                  )
+              );
    
   /*$app->register(new Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider, array(
       "orm.em.options" => array(
