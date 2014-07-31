@@ -13,9 +13,12 @@ $app->register(new ValidatorServiceProvider());
 $app->register(new ServiceControllerServiceProvider());
 $app->register(new TwigServiceProvider());
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
-    // add custom globals, filters, tags, ...
-
-    return $twig;
+  // add custom globals, filters, tags, ...
+  /*config extension smarTwig*/
+  $twig->setExtensions(
+        Yepsua\SmarTwig\Twig\Extension\SmarTwigExtension::getAllExtensions()
+    );
+  return $twig;
 }));
 
 $app->register(new SessionServiceProvider());

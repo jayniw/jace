@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 {% block title %}HOME{% endblock %}
 {% use "navbar.html" %}
-
+{% set name = 'jalo' %}
 {% block content %}
-    <h1>Probando la aplicacion y su barra superior</h1>
+    <div style="display:none">
+    {% ui_dialog title="Hello World" %}
+      The name is: <b>{{ name }}</b>
+    {% end_ui_dialog %}
+	</div>
 {% endblock %}
