@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 
-{% block title %}Base de Datos{% endblock %}
-{% use "navbar.html" %}
+{% block title %}RESUMEN{% endblock %}
 
 {% block content %}
   <div id="content">
     <p class="box">
-      Porcentaje generado de la imagen a fecha {{ "now"|date("d.m.Y H:i:s","America/La_Paz") }}<br>
+      Porcentaje generado del resumen a fecha {{ "now"|date("d.m.Y H:i:s","America/La_Paz") }}<br>
       Demora de {{ demora }} minutos.
     </p>
     <br>

@@ -30,8 +30,8 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(),
                               'port'          => '1521',
                               'servicename'   => 'CTL',
                               'dbname'        => 'CTL',
-                              'user'          => 'itjduran',
-                              'password'      => 'jduran2014it',
+                              'user'          => 'billing',
+                              'password'      => 'BILL123',
                               'charset'       => 'utf8'
                               )
                   )
@@ -48,7 +48,6 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(),
               ),
            ),
   ));*/
-
 
 
 return $app;

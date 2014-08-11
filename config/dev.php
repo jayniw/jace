@@ -17,3 +17,5 @@ $app->register($p = new WebProfilerServiceProvider(), array(
     'profiler.cache_dir' => __DIR__.'/../var/cache/profiler',
 ));
 $app->mount('/_profiler', $p);
+
+$app->register(new Sorien\Provider\DoctrineProfilerServiceProvider());
