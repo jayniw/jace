@@ -3,5 +3,9 @@
 {% block title %}Facturacion{% endblock %}
 
 {% block content %}
-  <pre>{{ dump(imagen) }}</pre>
+  <div id="content">
+    {{ component_render(imagenGrupo) }}
+    <br>
+    {{ component_render(imagenUnidad) }}
+  </div>
 {% endblock %}

@@ -179,15 +179,16 @@ $app->get('/resumen',
 $app->get('/facturacion/{periodo}/{grupo}', 
           function (Request $request) use ($app) {
             $fact=new Facturacion\facturacion($app);
-            $imagen=$fact->getImagenGrupo($request->get('grupo'),$request->get('periodo'));
-            foreach ($imagen[0] as $key => $value) {
-              echo $key.'<br>';
-            }
-            $jq=new jquery4php\jquery4php();
-            $grid=$jq->tabla($imagen);
-
-            /*--*/
-            return $app['twig']->render('fact/factGrupo.html', array('imagen'=>$imagen));
+            $jq=new jqTools\jqTools();
+            /*imagen grupo*/
+            $dataImagenGrupo=$fact->getImagenGrupo($request->get('grupo'),$request->get('periodo'));
+            $gridImagenGrupo=$jq->tabla($dataImagenGrupo,'IMAGEN GRUPO','imagenGrupoId');/**/
+            /*imagen unidad*/
+            $dataImagenUnidad=$fact->getImagenUnidadGrupo($request->get('grupo'),$request->get('periodo'));
+            $gridImagenUnidad=$jq->tablaFiltro($dataImagenUnidad,'IMAGEN UNIDAD','imagenUnidadId');           
+            return $app['twig']->render('fact/factGrupo.html', 
+                                        array('imagenGrupo'=>$gridImagenGrupo,
+                                              'imagenUnidad'=>$gridImagenUnidad));
           })
       ->bind('facturacion');
 

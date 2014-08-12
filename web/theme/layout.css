@@ -88,6 +88,7 @@ textarea {
 #wrapper {
 	width: 95%;
 	min-width: 960px;
+  width: 1100px;
 	min-height: 100%;
 	height: auto !important;
 	height: 100%;

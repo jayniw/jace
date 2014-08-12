@@ -1,18 +1,20 @@
 <?php
 namespace Facturacion;
 /**
-* 
+* Clase para el manejo de la facturacion por periodo.
 */
 class facturacion
 {
 	function __construct($app) {
     $this->app= $app;
   }
-  
+
 	public function getImagenGrupo($grupo,$periodo)
 	{
-		$sqlImagenGrupo="SELECT ID_CLIENTE,ID_GRUPO,ID_COBRANZA,ESTADO_GRUPO,FACTURABLE,CANTIDAD_UNIDADES,COLA,ESTADO,
-                            COD_ERROR,MENSAJE_ERROR,COD_USUARIO,FECHA_TRANSACCION
+		$sqlImagenGrupo="SELECT ID_CLIENTE,ID_GRUPO,ID_COBRANZA,ESTADO_GRUPO as E,FACTURABLE as f,
+                            CANTIDAD_UNIDADES as unidades,COLA,ESTADO,
+                            COD_ERROR,MENSAJE_ERROR,COD_USUARIO as usuario,
+                            to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
                        from billing.bl_imagen_grupo 
                       where cod_periodo='$periodo' 
                         and ID_GRUPO =$grupo";
@@ -20,8 +22,9 @@ class facturacion
 	}
 	public function getImagenUnidadGrupo($grupo,$periodo)
 	{
-		$sqlImagenUnidadGrupo="SELECT ID_CLIENTE,ID_GRUPO,ID_COBRANZA,ID_UNIDAD,NAME,LAYOUT,COD_LAYOUT,ESTADO_UNIDAD,
-                                  FACTURABLE,LIMITE_CREDITO,LIMITE_CONSUMO,COD_USUARIO,ID_TRANSACCION,FECHA_TRANSACCION
+		$sqlImagenUnidadGrupo="SELECT ID_CLIENTE,ID_GRUPO,ID_COBRANZA,ID_UNIDAD,NAME,LAYOUT,COD_LAYOUT,ESTADO_UNIDAD as E,
+                                  FACTURABLE as F,LIMITE_CREDITO as LCRE,LIMITE_CONSUMO as LCON,COD_USUARIO as usuario,
+                                  to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
                              from billing.bl_imagen_unidad
                             where cod_periodo='$periodo'
                               and ID_GRUPO =$grupo";
