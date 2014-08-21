@@ -23,8 +23,9 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 
 $app->register(new SessionServiceProvider());
 
-$app->register(new Silex\Provider\DoctrineServiceProvider(), 
-                   array('db.options'    => array(
+$app->register(new Silex\Provider\DoctrineServiceProvider(), array (
+                   'dbs.options' => array (
+                      'billing' => array (
                               'driver'        => 'pdo_oci',
                               'host'          => '10.49.5.110',
                               'port'          => '1521',
@@ -33,21 +34,19 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(),
                               'user'          => 'billing',
                               'password'      => 'BILL123',
                               'charset'       => 'utf8'
-                              )
+                              ),
+                      'scenter' => array (
+                              'driver'        => 'pdo_oci',
+                              'host'          => '10.49.4.40',
+                              'port'          => '1521',
+                              'servicename'   => 'itdb',
+                              'dbname'        => 'itdb',
+                              'user'          => 'scenter',
+                              'password'      => 'service',
+                              'charset'       => 'utf8'
+                              ),
+                    ),
                   )
-              );
-   
-  /*$app->register(new Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider, array(
-      "orm.em.options" => array(
-           "mappings" => array(
-              array(
-                 "type"      => "yml",
-                 "namespace" => "Entity",
-                 "path"      => realpath(__DIR__."/../config/doctrine"),
-                ),
-              ),
-           ),
-  ));*/
-
+                );
 
 return $app;

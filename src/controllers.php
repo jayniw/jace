@@ -238,6 +238,18 @@ $app->get('/facturacion/{periodo}/{grupo}',
           })
       ;
 
+$app->get('/reclamos',
+          function(Request $request) use ($app){
+            $periodo=date('Ym');
+            $scenter=new Operativa\operativa($app);
+            $jq=new jqTools\jqTools();
+            /*cierre reclamos diario*/
+            $dataCerradosDia=$scenter->getCerradosDia($periodo);
+            $gridCerradosDia=$jq->tabla($dataCerradosDia,'RECLAMOS CERRADOS POR DIA DEL PERIODO '.$periodo,'cerradosDiaId');
+            return $app['twig']->render('operativa/reclamos.html',array('cerradosDia'=>$gridCerradosDia));
+          })
+      ->bind('reclamos');
+
 $app->error(function (\Exception $e, $code) use ($app) {
     if ($app['debug']) {
         return;
