@@ -4,8 +4,50 @@
 
 {% block content %}
   <div id="content">
-    {{ component_render(imagenGrupo) }}
-    <br>
-    {{ component_render(imagenUnidad) }}
+    {% if imagenGrupo is defined %}
+      {# obtener data segun grupo y periodo #}
+      <div class="counter_blue" align="center">
+        Periodo {{ app.request.get('periodo') }} - Grupo {{ app.request.get('grupo') }}
+      </div>
+      {# imagen grupo #}<br>
+      {% if imagenGrupo is null %}
+        <div class="counter_red" align="center">No se tiene data para la bl_imagen_grupo.</div>
+      {% else %}
+        {{ component_render(imagenGrupo) }}  
+      {% endif %}
+      {# imagen unidad #}<br>
+      {% if imagenUnidad is null %}
+        <div class="counter_red" align="center">No se tiene data para la bl_imagen_unidad.</div>
+      {% else %}
+        {{ component_render(imagenUnidad) }}  
+      {% endif %}
+      {# resumen grupo #}<br>
+      {% if resumenGrupo is null %}
+        <div class="counter_red" align="center">No se tiene data para la bl_resumen_grupo.</div>
+      {% else %}
+        {{ component_render(resumenGrupo) }}  
+      {% endif %}
+      {# resumen unidad #}<br>
+      {% if resumenUnidad is null %}
+        <div class="counter_red" align="center">No se tiene data para la bl_resumen_unidad.</div>
+      {% else %}
+        {{ component_render(resumenUnidad) }}
+      {% endif %}
+      {# universo factura #}<br>
+      {% if univFact is null %}
+        <div class="counter_red" align="center">No se tiene data para la bl_universo_factura.</div>
+      {% else %}
+        {{ component_render(univFact) }}
+      {% endif %}
+      {# bl factura #}<br>
+      {% if blFact is null %}
+        <div class="counter_red" align="center">No se tiene data para la bl_factura.</div>
+      {% else %}
+        {{ component_render(blFact) }}
+      {% endif %}
+    {% else %}
+      {# formulario para busqueda de grupo por periodo #}
+      formulario
+    {% endif %}
   </div>
 {% endblock %}

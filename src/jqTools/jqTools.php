@@ -12,10 +12,12 @@ class jqTools
     $grid = new \YsGrid($divId,$caption); // <- id|name and caption
     /* The columns */
     $cols=null;
+       
     foreach ($data[0] as $key => $value) {
       $idGridField[$key] = new \YsGridField($key, str_replace('_', ' ',$key));
       $grid->addGridField($idGridField[$key]);
       $idGridField[$key]->setWidth(max(strlen($value),strlen($key))*8+15);
+      $idGridField[$key]->setAlign(\YsAlignment::$RIGHT);
     }
     $recordList = new \YsGridRecordList(); 
     for ($i=0; $i < count($data); $i++) { 
@@ -44,7 +46,7 @@ class jqTools
 	{
      return $this->grid($data,$caption,$divId);
 	}
-  
+
   public function tablaFiltro($data,$caption,$divId)
   {
     $grid=$this->grid($data,$caption,$divId);

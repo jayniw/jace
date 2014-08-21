@@ -16,7 +16,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 $app->match('/',
            function (Request $request) use ($app){
-            $error=array();
             if ($request->get('logout')){
               $app['session']->clear();
             }
@@ -30,7 +29,7 @@ $app->match('/',
                                                                                  "adserverlpz.nuevatel.net:389")));
               }
               catch (adLDAPException $e) {
-                  $error['ldap']=$e;
+                  $app['session']->setFlash('error',$e);
                   exit();   
               }
               /*autenticar en AD*/
@@ -41,11 +40,11 @@ $app->match('/',
                 $app['session']->set('user',array('username'=>$login['_username'],
                                                   'userrol'=>$rol));
               } else {
-                $error['login']='Usuario o contraseña incorrecto.';
+                $app['session']->getFlashBag()->add('error','Usuario o contraseña incorrecto.');
               }
               $adldap->close();
             }
-            return $app['twig']->render('index.html', array('error'=>$error));
+            return $app['twig']->render('index.html', array());
            })
       ->bind('homepage');
 
@@ -175,22 +174,69 @@ $app->get('/resumen',
             return $app['twig']->render('resumen.html', array('hoy'=>$rows,'grid' => $grid,'demora'=>$demora));
           })
       ->bind('resumen');
-
+$app->get('/facturacion',
+          function() use ($app){
+            return $app['twig']->render('fact/factGrupo.html',array());
+          })
+      ->bind('facturacion');
 $app->get('/facturacion/{periodo}/{grupo}', 
           function (Request $request) use ($app) {
+            $grupo=$request->get('grupo');
+            $periodo=$request->get('periodo');
             $fact=new Facturacion\facturacion($app);
             $jq=new jqTools\jqTools();
             /*imagen grupo*/
-            $dataImagenGrupo=$fact->getImagenGrupo($request->get('grupo'),$request->get('periodo'));
-            $gridImagenGrupo=$jq->tabla($dataImagenGrupo,'IMAGEN GRUPO','imagenGrupoId');/**/
+            $dataImagenGrupo=$fact->getImagenGrupo($grupo,$periodo);
+            if (count($dataImagenGrupo)>0) {
+              $gridImagenGrupo=$jq->tabla($dataImagenGrupo,'IMAGEN GRUPO','imagenGrupoId');
+            } else {
+              $gridImagenGrupo=null;
+            }
             /*imagen unidad*/
-            $dataImagenUnidad=$fact->getImagenUnidadGrupo($request->get('grupo'),$request->get('periodo'));
-            $gridImagenUnidad=$jq->tablaFiltro($dataImagenUnidad,'IMAGEN UNIDAD','imagenUnidadId');           
+            $dataImagenUnidad=$fact->getImagenUnidadGrupo($grupo,$periodo);
+            if (count($dataImagenUnidad)>0) {
+              $gridImagenUnidad=$jq->tablaFiltro($dataImagenUnidad,'IMAGEN UNIDAD','imagenUnidadId');
+            } else {
+              $gridImagenUnidad=null;
+            }
+            /*resumen grupo*/
+            $dataResumenGrupo=$fact->getResumenGrupo($grupo,$periodo);
+            if (count($dataResumenGrupo)>0) {
+              $gridResumenGrupo=$jq->tabla($dataResumenGrupo,'RESUMEN GRUPO','resumenGrupoId');
+            } else {
+              $gridResumenGrupo=null;
+            }
+            /*resumen unidad*/
+            $dataResumenUnidad=$fact->getResumenUnidadGrupo($grupo,$periodo);
+            if (count($dataResumenUnidad)>0) {
+              $gridResumenUnidad=$jq->tablaFiltro($dataResumenUnidad,'RESUMEN UNIDAD','resumenUnidadId');
+            } else {
+              $gridResumenUnidad=null;
+            }
+            /*universo factura*/
+            $dataUnivFact=$fact->getUnivFAct($grupo,$periodo);
+            if (count($dataUnivFact)>0) {
+              $gridUnivFact=$jq->tabla($dataUnivFact,'UNIVERSO FACTURA','univFactId');
+            } else {
+              $gridUnivFact=null;
+            }
+            /*billing factura*/ 
+            $dataBlFact=$fact->getBlFactura($grupo,$periodo);
+            if (count($dataBlFact)>0) {
+              $gridBlFact=$jq->tabla($dataBlFact,'BL FACTURA','blFactId');
+            } else {
+              $gridBlFact=null;
+            }
+
             return $app['twig']->render('fact/factGrupo.html', 
                                         array('imagenGrupo'=>$gridImagenGrupo,
-                                              'imagenUnidad'=>$gridImagenUnidad));
+                                              'imagenUnidad'=>$gridImagenUnidad,
+                                              'resumenGrupo'=>$gridResumenGrupo,
+                                              'resumenUnidad'=>$gridResumenUnidad,
+                                              'univFact'=>$gridUnivFact,
+                                              'blFact'=>$gridBlFact));
           })
-      ->bind('facturacion');
+      ;
 
 $app->error(function (\Exception $e, $code) use ($app) {
     if ($app['debug']) {

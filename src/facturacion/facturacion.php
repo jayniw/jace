@@ -11,9 +11,16 @@ class facturacion
 
 	public function getImagenGrupo($grupo,$periodo)
 	{
-		$sqlImagenGrupo="SELECT ID_CLIENTE,ID_GRUPO,ID_COBRANZA,ESTADO_GRUPO as E,FACTURABLE as f,
-                            CANTIDAD_UNIDADES as unidades,COLA,ESTADO,
-                            COD_ERROR,MENSAJE_ERROR,COD_USUARIO as usuario,
+		$sqlImagenGrupo="SELECT ID_CLIENTE,
+                            ID_COBRANZA,
+                            ESTADO_GRUPO as E,
+                            FACTURABLE as f,
+                            CANTIDAD_UNIDADES as unidades,
+                            COLA,
+                            ESTADO,
+                            COD_ERROR,
+                            MENSAJE_ERROR,
+                            COD_USUARIO as usr,
                             to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
                        from billing.bl_imagen_grupo 
                       where cod_periodo='$periodo' 
@@ -22,8 +29,17 @@ class facturacion
 	}
 	public function getImagenUnidadGrupo($grupo,$periodo)
 	{
-		$sqlImagenUnidadGrupo="SELECT ID_CLIENTE,ID_GRUPO,ID_COBRANZA,ID_UNIDAD,NAME,LAYOUT,COD_LAYOUT,ESTADO_UNIDAD as E,
-                                  FACTURABLE as F,LIMITE_CREDITO as LCRE,LIMITE_CONSUMO as LCON,COD_USUARIO as usuario,
+		$sqlImagenUnidadGrupo="SELECT ID_CLIENTE,
+                                  ID_COBRANZA,
+                                  ID_UNIDAD,
+                                  NAME,
+                                  LAYOUT,
+                                  COD_LAYOUT,
+                                  ESTADO_UNIDAD as E,
+                                  FACTURABLE as F,
+                                  LIMITE_CREDITO as LCRE,
+                                  LIMITE_CONSUMO as LCON,
+                                  COD_USUARIO as usr,
                                   to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
                              from billing.bl_imagen_unidad
                             where cod_periodo='$periodo'
@@ -32,32 +48,65 @@ class facturacion
 	}
   public function getResumenGrupo($grupo,$periodo)
   {
-    $sqlResumenGrupo="SELECT ID_CLIENTE,ID_GRUPO,ID_CARGO,
+    $sqlResumenGrupo="SELECT ID_CLIENTE,
+                             ID_CARGO as cargo,
                              (select descripcion 
                                 from billing.CF_CARGO 
-                               where ID_CARGO=rg.ID_CARGO) cargo,
-                             CANTIDAD,SALDO,COD_USUARIO,FECHA_TRANSACCION
+                               where ID_CARGO=rg.ID_CARGO) as descripcion_cargo,
+                             CANTIDAD as cant,
+                             to_char(SALDO,'FM9999990.00') as imp,
+                             COD_USUARIO as usr,
+                             to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
                         from billing.BL_resumen_grupo rg 
                        where cod_periodo='$periodo' 
-                         and id_grupo=$id_grupo";
+                         and id_grupo=$grupo";
     return $this->app['db']->fetchAll($sqlResumenGrupo);
   }
   public function getResumenUnidadGrupo($grupo,$periodo)
   {
-    $sqlResumenUnidadGrupo="SELECT ID_CLIENTE,ID_GRUPO,ID_UNIDAD,ID_CARGO,
+    $sqlResumenUnidadGrupo="SELECT ID_CLIENTE,
+                                   ID_UNIDAD,
+                                   ID_CARGO as cargo,
                                    (select descripcion 
                                       from billing.CF_CARGO 
-                                     where ID_CARGO=ru.ID_CARGO) cargo,
-                                   LAYOUT,COD_LAYOUT,CANTIDAD,IMPORTE,COD_USUARIO,FECHA_TRANSACCION
+                                     where ID_CARGO=ru.ID_CARGO) as descripcion_cargo,
+                                   LAYOUT,
+                                   COD_LAYOUT,
+                                   CANTIDAD as cant,
+                                   to_char(IMPORTE,'FM9999990.00') as imp,
+                                   COD_USUARIO as usr,
+                                   to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
                               from billing.BL_resumen_unidad ru 
                              where cod_periodo='$periodo'
                                and ID_GRUPO =$grupo";
     return $this->app['db']->fetchAll($sqlResumenUnidadGrupo);
   }
+  public function getUnivFact($grupo,$periodo)
+  {
+    $sqlUnivFact="SELECT ID_CLIENTE,
+                         ID_CTA_CORRIENTE,
+                         to_char(SUMA_NEGATIVOS,'FM9999990.00') as NEG,
+                         to_char(SUMA_POSITIVOS,'FM9999990.00') as POS,
+                         to_char(TOTAL_CARRIER,'FM9999990.00') as CARRIER,
+                         to_char(TOTAL_DEUDA,'FM9999990.00') as DEUDA,
+                         to_char(TOTAL_FACTURAR,'FM9999990.00') as TOTAL,
+                         COD_USUARIO as usr,
+                         COLA,
+                         to_char(FCH_PROCESADO,'dd.mm.yyyy hh24:mi:ss') as fecha 
+                    from billing.BL_UNIVERSO_FACTURA
+                   where cod_periodo='$periodo' and id_grupo=$grupo";
+    return $this->app['db']->fetchAll($sqlUnivFact);
+  }
   public function getBlFactura($grupo,$periodo)
   {
-    $sqlBlFactura="SELECT COD_PERIODO,ID_CLIENTE,ID_GRUPO,ID_DOCUMENTO,ESTADO,FECHA_EMISION,
-                          IMPORTE_CREDITO_FISCAL,COD_USUARIO,FECHA_TRANSACCION
+    $sqlBlFactura="SELECT ID_CLIENTE,
+                          ID_DOCUMENTO,
+                          ESTADO,
+                          to_char(FECHA_EMISION,'dd.mm.yyyy hh24:mi:ss') as EMISION,
+                          to_char(IMPORTE_CREDITO_FISCAL,'FM9999990.00') as IMPORTE,
+                          to_char(FECHA_PAGO,'dd.mm.yyyy hh24:mi:ss') as PAGO,
+                          COD_USUARIO as usr,
+                          to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
                      from bl_factura 
                     where id_grupo=$grupo
                       and cod_periodo='$periodo'
