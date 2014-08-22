@@ -12,14 +12,32 @@ class operativa
 
   public function getCerradosDia($periodo)
   {
-    $sqlCerradosDia="SELECT a.usuario as esp, a.d01, a.d02,
-                            a.d03, a.d04, a.d05, a.d06, a.d07, a.d08, a.d09, a.d10, a.d11,
-                            a.d12, a.d13, a.d14, a.d15, a.d16, a.d17, a.d18, a.d19, a.d20,
-                            a.d21, a.d22, a.d23, a.d24, a.d25, a.d26, a.d27, a.d28, a.d29,
-                            a.d30, a.d31
-                       FROM hpsc_rep_closed_month a
-                      where a.fecha='$periodo'
-                        and usuario in (".$this->app['esp'].")";
+    $sqlCerradosDia=" SELECT a.Usuario As Esp,
+                             a.D01, a.D02, a.D03, a.D04, a.D05, a.D06, a.D07, a.D08, a.D09, a.D10, 
+                             a.D11, a.D12, a.D13, a.D14, a.D15, a.D16, a.D17, a.D18, a.D19, a.D20,
+                             a.D21, a.D22, a.D23, a.D24, a.D25, a.D26, a.D27, a.D28, a.D29, a.D30, a.D31,
+                             (a.D01 + a.D02 + a.D03 + a.D04 + a.D05 + a.D06 + a.D07 + a.D08 +
+                              a.D09 + a.D10 + a.D11 + a.D12 + a.D13 + a.D14 + a.D15 + a.D16 +
+                              a.D17 + a.D18 + a.D19 + a.D20 + a.D21 + a.D22 + a.D23 + a.D24 +
+                              a.D25 + a.D26 + a.D27 + a.D28 + a.D29 + a.D30 + a.D31) As Total
+                        From Hpsc_Rep_Closed_Month a
+                       Where a.Fecha = '$periodo'
+                         And Usuario In (".$this->app['esp'].")
+                      Union
+                      SELECT 'TOTAL',
+                             Sum(D01), Sum(D02), Sum(D03), Sum(D04), Sum(D05), Sum(D06), Sum(D07), Sum(D08),
+                             Sum(D09), Sum(D10), Sum(D11), Sum(D12), Sum(D13), Sum(D14), Sum(D15), Sum(D16),
+                             Sum(D17), Sum(D18), Sum(D19), Sum(D20), Sum(D21), Sum(D22), Sum(D23), Sum(D24),
+                             Sum(D25), Sum(D26), Sum(D27), Sum(D28), Sum(D29), Sum(D30), Sum(D31),
+                             (Sum(D01) + Sum(D02) + Sum(D03) + Sum(D04) + Sum(D05) + Sum(D06) +
+                              Sum(D07) + Sum(D08) + Sum(D09) + Sum(D10) + Sum(D11) + Sum(D12) +
+                              Sum(D13) + Sum(D14) + Sum(D15) + Sum(D16) + Sum(D17) + Sum(D18) +
+                              Sum(D19) + Sum(D20) + Sum(D21) + Sum(D22) + Sum(D23) + Sum(D24) +
+                              Sum(D25) + Sum(D26) + Sum(D27) + Sum(D28) + Sum(D29) + Sum(D30) + Sum(D31)) As Total
+                        From Hpsc_Rep_Closed_Month a
+                       Where Fecha = '$periodo'
+                         And Usuario In (".$this->app['esp'].")
+                       Order By Total";
     return $this->app['dbs']['scenter']->fetchAll($sqlCerradosDia);
   }
 }

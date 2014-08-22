@@ -59,5 +59,19 @@ class jqTools
 
     return $grid; 
   }
+  public function tablaReclamos($data,$caption,$divId,$periodo)
+  {
+    $diasMes=cal_days_in_month(CAL_GREGORIAN, substr($periodo,4,2), substr($periodo,0,4));
+    //echo $diasMes.'<br>';
+    for ($i=0; $i < count($data); $i++) {
+      //echo '<pre>'; print_r($data[$i]); echo '</pre>'; 
+      foreach ($data[$i] as $key => $value) {
+        if (substr($key,1)<=$diasMes) {
+          $dataPeriodo[$i][$key]=$value;
+        }
+      }
+    }
+    //echo '<pre>'; print_r($dataPeriodo); echo '</pre>';  
+    return $this->grid($dataPeriodo,$caption,$divId);
+  }  
 }
-?>

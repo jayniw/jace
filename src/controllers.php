@@ -29,7 +29,7 @@ $app->match('/',
                                                                                  "adserverlpz.nuevatel.net:389")));
               }
               catch (adLDAPException $e) {
-                  $app['session']->setFlash('error',$e);
+                  $app['session']->getFlashBag()->add('error',$e);
                   exit();   
               }
               /*autenticar en AD*/
@@ -238,14 +238,21 @@ $app->get('/facturacion/{periodo}/{grupo}',
           })
       ;
 
-$app->get('/reclamos',
+$app->match('/reclamos',
           function(Request $request) use ($app){
-            $periodo=date('Ym');
+            if ($request->get('periodo')) {
+              $periodo=$request->get('periodo');
+            } else {
+              $periodo=date('Ym');
+            }
             $scenter=new Operativa\operativa($app);
             $jq=new jqTools\jqTools();
             /*cierre reclamos diario*/
             $dataCerradosDia=$scenter->getCerradosDia($periodo);
-            $gridCerradosDia=$jq->tabla($dataCerradosDia,'RECLAMOS CERRADOS POR DIA DEL PERIODO '.$periodo,'cerradosDiaId');
+            $gridCerradosDia=$jq->tablaReclamos($dataCerradosDia,
+                                                'RECLAMOS CERRADOS POR DIA DEL PERIODO '.$periodo,
+                                                'cerradosDiaId',
+                                                $periodo);
             return $app['twig']->render('operativa/reclamos.html',array('cerradosDia'=>$gridCerradosDia));
           })
       ->bind('reclamos');
