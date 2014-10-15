@@ -29,7 +29,12 @@
       "adldap/adldap": "dev-master",
       "yepsua/smartwig": "1.1.*@dev",
 
-      "sorien/silex-dbal-profiler": "1.1.0"
+      "sorien/silex-dbal-profiler": "1.1.0",
+
+      "drush/drush": "dev-master",
+      "squizlabs/php_codesniffer": "*",
+      "fabpot/php-cs-fixer": "*",
+      "phpmd/phpmd": "*"
   },
   "autoload": {
       "psr-0": { "": "src/" }

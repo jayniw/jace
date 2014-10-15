@@ -1,0 +1,44 @@
+{% block menu %}
+{% set periodo="now"|date("Ym")-1 %}
+<table>
+  {% if rol==1 %}
+  <tr><td></td></tr>
+  <tr>
+    <td>
+      <a href="{{ app.url_generator.generate('homepage') }}"
+         class="btn_menu">Inicio</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="{{ app.url_generator.generate('admin') }}"
+         class="btn_menu">Admin</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="{{ app.url_generator.generate('imagen') }}"
+         class="btn_menu">Imagen</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="{{ app.url_generator.generate('resumen') }}"
+         class="btn_menu">Resumen</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="{{ app.url_generator.generate('facturacion') }}"
+         class="btn_menu">Facturacion</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="{{ app.url_generator.generate('reclamos') }}"
+         class="btn_menu">Reclamos</a>
+    </td>
+  </tr>
+  {% endif %}
+</table>
+{% endblock %}

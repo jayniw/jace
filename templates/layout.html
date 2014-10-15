@@ -12,36 +12,23 @@
     {% endblock %}
   </head>
   <body>
-    {% block navbar %}
-      <div align="right" id="p1">
-        {% if app.session.get('user').username is defined %}
-          <form role="logout" method="POST">
-            <input type="hidden" name="logout[_username]" value="logout">
-            <button type="submit" name="logout[_submit]" value="logout" class="btncito">
-              {{ app.session.get('user').username|e }}
-            </button>
-          </form>
-        {% else %}
-          <form role="login" method="POST">
-            <input type="text" name="login[_username]" class="boxito" placeholder="Usuario">
-            <input type="password" name="login[_password]" class="boxito" placeholder="Password">
-            <button type="submit" name="login[_submit]" value="login" class="btncito">Ingresar</button>
-          </form> 
-        {% endif %}
-      </div>
-    {% endblock %}
+    <div id="navbar">
+      {% block navbar %}
+        {% embed "navbar.twig" %}{% endembed %}
+      {% endblock %}
+    </div>
     <div id="sideLeft">
       {% if app.session.get('user').username is defined %}
-        {% embed "menu.html" with {'rol':app.session.get('user').userrol} %}
+        {% embed "menu.twig" with {'rol':app.session.get('user').userrol} %}
       {% endembed %}
       {% endif %}
     </div>
     <div id="wrapper">
       <div id="middle">
         {% block error %}
-          {% if app.session.getFlashBag.get('error').0 is defined %}
-            <div class="counter_red" align="center">{{ app.session.getFlashBag.get('error').0 }}</div>
-          {% endif %}
+          {% for error in app.session.getFlashBag.get('error') %}
+            <div class="counter_red" align="center">{{ error }}</div>
+          {% endfor %}
         {% endblock %}
         {% block content %}{% endblock %}
 

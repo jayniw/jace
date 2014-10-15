@@ -1,40 +1,58 @@
-<?php 
+<?php
 namespace Seguridad;
 /**
 * clase para autentificacion y control de roles a la aplicacion
 */
 class seguridad
 {
-	private $menuAdmin = array('Home' => '/', );
-  private $menuRepor = array('Cliente' => '/repor/cliente',
-                     'Grupo' => '/repor/grupo',
-                     'Unidad' => '/repor/unidad', );
-  private $menuAbm = array('Crear' => '/abm/crear',
-                   'Aprobar' => '/abm/aprobar', );
+  /**
+   * __construct
+   * @param object $app objeto aplicacion
+   */
+  function __construct($app) {
+    $this->app= $app;
+  }
+  /**
+   * Obtener rol correspondiente al usuario
+   * @param  string $usr usuario logueado
+   * @return integer      id rol
+   */
 	public function getRol($usr)
   {
-    $this->root=array('jduran');
-    $this->admin=array('jgallinate','gmercado');
-    $this->esp=array('jdaviu','gmaldonado','JoseCastro','mvelasco','htorres');
-    switch (true) {
-      case in_array($usr, $this->root):
-        return 1;
-        break;
-      case in_array($usr, $this->admin):
-        return 2;
-        break;
-      case in_array($usr, $this->esp): 
-        return 3;
-        break; 
-      default:
-        return 0;
-        break;
+    $sqlRol="SELECT id_rol
+               from itjduran.bill_usuario
+              where id_usuario='$usr'";
+    $rol=$this->app['db']->fetchAll($sqlRol);
+    if (count($rol)==0) {
+      $rol[0]['ID_ROL']=0;
     }
+    return $rol[0]['ID_ROL'];
   }
   public function getMenuRol($rol)
   {
-    
+    $sqlMenuRol="";
+
   }
+  /**
+   * obtener la lista de usuarios del modulo billing
+   * @return array lista de usuarios
+   */
+  public function getUsuarios()
+  {
+    $sqlUsuarios="SELECT id_usuario,
+                         email,
+                         telefono,
+                         ip,
+                         (SELECT descripcion from itjduran.bill_rol where id=u.id_rol ) rol,
+                         to_char(created_at,'dd.mm.yyyy hh24:mi:ss') fecha_creacion,
+                         created_by creado_por,
+                         to_char(updated_at,'dd.mm.yyyy hh24:mi:ss') fecha_actualizacion,
+                         updated_by actualizado_por
+                    from itjduran.bill_usuario u
+                   order by rol, id_usuario";
+    return $this->app['db']->fetchAll($sqlUsuarios);
+  }
+
 }
 
 ?>

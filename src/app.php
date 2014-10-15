@@ -31,8 +31,8 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array (
                               'port'          => '1521',
                               'servicename'   => 'CTL',
                               'dbname'        => 'CTL',
-                              'user'          => 'billing',
-                              'password'      => 'BILL123',
+                              'user'          => 'bil_soporte',
+                              'password'      => 'billingsupport2014',
                               'charset'       => 'utf8'
                               ),
                       'scenter' => array (

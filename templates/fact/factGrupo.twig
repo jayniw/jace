@@ -13,19 +13,19 @@
       {% if imagenGrupo is null %}
         <div class="counter_red" align="center">No se tiene data para la bl_imagen_grupo.</div>
       {% else %}
-        {{ component_render(imagenGrupo) }}  
+        {{ component_render(imagenGrupo) }}
       {% endif %}
       {# imagen unidad #}<br>
       {% if imagenUnidad is null %}
         <div class="counter_red" align="center">No se tiene data para la bl_imagen_unidad.</div>
       {% else %}
-        {{ component_render(imagenUnidad) }}  
+        {{ component_render(imagenUnidad) }}
       {% endif %}
       {# resumen grupo #}<br>
       {% if resumenGrupo is null %}
         <div class="counter_red" align="center">No se tiene data para la bl_resumen_grupo.</div>
       {% else %}
-        {{ component_render(resumenGrupo) }}  
+        {{ component_render(resumenGrupo) }}
       {% endif %}
       {# resumen unidad #}<br>
       {% if resumenUnidad is null %}
@@ -45,9 +45,29 @@
       {% else %}
         {{ component_render(blFact) }}
       {% endif %}
+      {# ctl factura #}<br>
+      {% if ctlFact is null %}
+        <div class="counter_red" align="center">No se tiene data para la ctl.factura.</div>
+      {% else %}
+        {{ component_render(ctlFact) }}
+      {% endif %}
     {% else %}
       {# formulario para busqueda de grupo por periodo #}
-      formulario
+      <div>
+      <form method="POST">
+        <label for="">Periodo:</label>
+        <select class="sel" name="periodo">
+          {% for i in "now"|date("Ym")-1.."now"|date("Ym")-6 %}
+            <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+        <label for="">Grupo:</label>
+        <input type="text" class="sel" name="grupo">
+        <button type="submit" name="submit" value="Buscar" class="btncito">
+          Buscar
+        </button>
+      </form>
+      </div>
     {% endif %}
   </div>
 {% endblock %}

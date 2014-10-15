@@ -8,254 +8,174 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
-/*$app->get('/', 
-          function () use ($app) {
-            return $app['twig']->render('index.html', array());
-          })
-      ->bind('homepage');*/
+$app->mount('/admin',include 'backend.php');
 
-$app->match('/',
-           function (Request $request) use ($app){
-            if ($request->get('logout')){
-              $app['session']->clear();
-            }
-            if ($request->get('login')){
-              $login= $request->get('login');
-              /*conectar a AD*/
-              try{
-                $adldap = new adLDAP\adLDAP(array('account_suffix' => "@nuevatel.net",
-                                                  'base_dn' => "DC=nuevatel,DC=net",
-                                                  'domain_controllers' => array ("10.40.3.97:389",
-                                                                                 "adserverlpz.nuevatel.net:389")));
-              }
-              catch (adLDAPException $e) {
-                  $app['session']->getFlashBag()->add('error',$e);
-                  exit();   
-              }
-              /*autenticar en AD*/
-              if ($adldap->authenticate($login['_username'],$login['_password'])) {
-                $app['session']->start();
-                $sec=new Seguridad\seguridad();
-                $rol=$sec->getRol($login['_username']);
-                $app['session']->set('user',array('username'=>$login['_username'],
-                                                  'userrol'=>$rol));
-              } else {
-                $app['session']->getFlashBag()->add('error','Usuario o contraseña incorrecto.');
-              }
-              $adldap->close();
-            }
-            return $app['twig']->render('index.html', array());
-           })
-      ->bind('homepage');
+$app->match('/', function (Request $request) use ($app){
+  if ($request->get('logout')){
+    $app['session']->clear();
+  }
+  if ($request->get('login')){
+    $login= $request->get('login');
+    /*conectar a AD*/
+    try{
+      $adldap = new adLDAP\adLDAP(array('account_suffix' => "@nuevatel.net",
+                                        'base_dn' => "DC=nuevatel,DC=net",
+                                        'domain_controllers' => array ("10.40.3.97:389",
+                                                                       "adserverlpz.nuevatel.net:389")));
+    }
+    catch (adLDAPException $e) {
+      $app['session']->getFlashBag()->add('error',$e);
+      exit();
+    }
+    /*autenticar en AD*/
+    if ($adldap->authenticate($login['_username'],$login['_password'])) {
+      $app['session']->start();
+      $sec=new Seguridad\seguridad($app);
+      $rol=$sec->getRol($login['_username']);
+      $app['session']->set('user',array('username'=>$login['_username'],
+                                        'userrol'=>$rol));
+    } else {
+      $app['session']->getFlashBag()->add('error','Usuario o contraseña incorrecto.');
+    }
+    $adldap->close();
+  }
+  return $app['twig']->render('index.html', array());
+})->bind('homepage');
 
-$app->get('/imagen', 
-          function () use ($app) {
-            $sql="SELECT Cola, Estado, Cant, Round(Cant * 100 / Tot, 2) por
-                    From (Select Cola,
-                                 a.Estado,
-                                 Count(*) Cant,
-                                 (Select Count(*)
-                                    From billing.Bl_Tmp_Imagen_Facturacion
-                                   Where Cola = a.Cola) Tot
-                            From billing.Bl_Tmp_Imagen_Facturacion a
-                           Group By Cola, Estado
-                           Order By 2)";
-            $sqlDem="SELECT max(dem) dem 
-                       from (select round(((sysdate-THIS_DATE)*60*24),2)dem,
-                                    job,
-                                    last_date,
-                                    this_date,
-                                    next_date,
-                                    broken,
-                                    failures,
-                                    interval,
-                                    what 
-                               from user_jobs
-                              where what like '%crear_imagen%')";
-            $rows=$app['db']->fetchAll($sql);
-            $dem=$app['db']->fetchAll($sqlDem);
-            $demora=$dem[0]['DEM'];
-            /*para probar jgrid*/
-            \YsJQuery::useComponent(\YsJQueryConstant::COMPONENT_JQGRID);
-            /* The Grid */
-            $grid = new \YsGrid('gridId',NULL); // <- id|name and caption
+$before=function (Request $request) use ($app) {
+  $userSession=$app['session']->get('user');
+  if (count($userSession)==0) {
+    $app['session']->getFlashBag()->add('error','Para acceder a los modulos debe estar logueado.');
+    return $app->redirect($app['url_generator']->generate('homepage', array()));
+  }
+};
 
-            /* The columns */
-            $colaCol = new \YsGridField('COLA', 'COLA');
-            $estadoCol = new \YsGridField('ESTADO', 'ESTADO');
-            $cantCol = new \YsGridField('CANT', 'CANTIDAD');
-            $porCol = new \YsGridField('POR', 'PORCENTAJE');
+$app->get('/imagen', function () use ($app) {
+  $fact=new Facturacion\Facturacion($app);
+  $jq=new jqTools\jqTools();
+  $dataTmpImagen=$fact->getImagenProcess();
+  $dataTmpImagenDem=$fact->getImagenProcessDem();
+  $gridTmpImagen=$jq->tabla($dataTmpImagen,
+                            '['.$dataTmpImagenDem[0]['AHORA'].']Porcentaje generado de la imagen. Demora de '.$dataTmpImagenDem[0]['DEM'].' minutos.',
+                            'tmpImagenId');
+  return $app['twig']->render('imagen.twig', array('grid' => $gridTmpImagen));
+}
+)->before($before)
+ ->bind('imagen');
 
-            /* The Data (Local Type) */
-            $grid->addGridFields($colaCol, $estadoCol, $cantCol, $porCol); 
+$app->match('/resumen', function (Request $request) use ($app) {
+  set_time_limit(0);
+  $periodo=date('Ym')-1;
+  $fact=new Facturacion\Facturacion($app);
+  $jq=new jqTools\jqTools();
+  $dataResumen=$fact->getResumenProcess($periodo);
+  $dataResumenDem=$fact->getResumenProcessDem();
+  $gridResumen=$jq->tablaFiltro($dataResumen,
+                          '['.$dataResumenDem[0]['AHORA'].']Porcentaje generado del resumen. Demora de '.$dataResumenDem[0]['DEM'].' minutos.',
+                          'tmpResumenId');
+  //for para obtener los datos por estado
+  //creacion de array poara almacenar los grids a mostrar en template
+  return $app['twig']->render('resumen.twig', array('grid' => $gridResumen));
+}
+)->before($before)
+ ->bind('resumen');
 
-            $records = new \YsGridRecordList(); // To add a list of records (Rows)
-            for ($i=0; $i < count($rows); $i++) { 
-              $record = new \YsGridRecord();
-              $record->setAttribute('COLA',$rows[$i]['COLA']);
-              $record->setAttribute('ESTADO',$rows[$i]['ESTADO']);
-              $record->setAttribute('CANT',$rows[$i]['CANT']);
-              $record->setAttribute('POR',$rows[$i]['POR']);
-              $records->append($record);
-            }
-            $grid->setRecordList($records); // set the RecordList to the Grid
-            /* jqGrid options */
-            $grid->setWidth("100%");
-            $grid->setDataType(\YsGridConstants::DATA_TYPE_LOCAL);
-            $grid->setHeight('auto');
-            $grid->setRowNum(20);
-            $grid->setRowList(array(10,30,count($rows)));
-            $grid->setViewRecords(true);
-            $grid->setSortname('name');
-            /*--*/
-            return $app['twig']->render('imagen.html', array('hoy'=>$rows,'grid' => $grid,'demora'=>$demora));
-          })
-      ->bind('imagen');
+$app->match('/facturacion', function(Request $request) use ($app){
+  if ($request->get('periodo')){
+    return $app->redirect(
+    $app['url_generator']->generate('fact',
+                                    array('periodo'=>$request->get('periodo'),
+                                          'grupo'=>$request->get('grupo')))
+    );
+   }else{
+    return $app['twig']->render('fact/factGrupo.twig');
+  }
+}
+)->bind('facturacion');
 
-$app->get('/resumen', 
-          function () use ($app) {
-            set_time_limit(0);
-            $sql="SELECT Cola,
-                         Estado,
-                         Count(*) Cant,
-                         Round((Count(*) * 100) / 18174.25, 2) Por
-                    From Bl_Imagen_Grupo
-                   Where Cod_Periodo = '201407'
-                   Group By Cola, Estado
-                   Order By 2 desc,1 asc";
-            $sqlDem="SELECT max(dem) dem 
-                       from (select round(((sysdate-THIS_DATE)*60*24),2)dem,
-                                    job,
-                                    last_date,
-                                    this_date,
-                                    next_date,
-                                    broken,
-                                    failures,
-                                    interval,
-                                    what 
-                               from user_jobs
-                              where what like '%generar_resumen%')";
-            $rows=$app['db']->fetchAll($sql);
-            $dem=$app['db']->fetchAll($sqlDem);
-            $demora=$dem[0]['DEM'];
-            /*para probar jgrid*/
-            \YsJQuery::useComponent(\YsJQueryConstant::COMPONENT_JQGRID);
-            /* The Grid */
-            $grid = new \YsGrid('gridId',NULL); // <- id|name and caption
+$app->match('/facturacion/{periodo}/{grupo}', function (Request $request) use ($app) {
+  $grupo=$request->get('grupo');
+  $periodo=$request->get('periodo');
+  $fact=new Facturacion\Facturacion($app);
+  $jq=new jqTools\jqTools();
+  /*imagen grupo*/
+  $dataImagenGrupo=$fact->getImagenGrupo($grupo,$periodo);
+  if (count($dataImagenGrupo)>0) {
+    $gridImagenGrupo=$jq->tabla($dataImagenGrupo,'IMAGEN GRUPO','imagenGrupoId');
+  } else {
+    $gridImagenGrupo=null;
+  }
+  /*imagen unidad*/
+  $dataImagenUnidad=$fact->getImagenUnidadGrupo($grupo,$periodo);
+  if (count($dataImagenUnidad)>0) {
+    $gridImagenUnidad=$jq->tablaFiltro($dataImagenUnidad,'IMAGEN UNIDAD','imagenUnidadId');
+  } else {
+    $gridImagenUnidad=null;
+  }
+  /*resumen grupo*/
+  $dataResumenGrupo=$fact->getResumenGrupo($grupo,$periodo);
+  if (count($dataResumenGrupo)>0) {
+    $gridResumenGrupo=$jq->tabla($dataResumenGrupo,'RESUMEN GRUPO','resumenGrupoId');
+  } else {
+    $gridResumenGrupo=null;
+  }
+  /*resumen unidad*/
+  $dataResumenUnidad=$fact->getResumenUnidadGrupo($grupo,$periodo);
+  if (count($dataResumenUnidad)>0) {
+    $gridResumenUnidad=$jq->tablaFiltro($dataResumenUnidad,'RESUMEN UNIDAD','resumenUnidadId');
+  } else {
+    $gridResumenUnidad=null;
+  }
+  /*universo factura*/
+  $dataUnivFact=$fact->getUnivFAct($grupo,$periodo);
+  if (count($dataUnivFact)>0) {
+    $gridUnivFact=$jq->tabla($dataUnivFact,'UNIVERSO FACTURA','univFactId');
+  } else {
+    $gridUnivFact=null;
+  }
+  /*billing factura*/
+  $dataBlFact=$fact->getBlFactura($grupo,$periodo);
+  if (count($dataBlFact)>0) {
+    $gridBlFact=$jq->tabla($dataBlFact,'BL FACTURA','blFactId');
+  } else {
+    $gridBlFact=null;
+  }
+  /*ctl factura*/
+  $dataCtlFact=$fact->getCtlFactura($grupo,$periodo);
+  if (count($dataCtlFact)>0) {
+    $gridCtlFact=$jq->tabla($dataCtlFact,'CTL FACTURA','ctlFactId');
+  } else {
+    $gridCtlFact=null;
+  }
+  return $app['twig']->render('fact/factGrupo.twig',
+                              array('imagenGrupo'=>$gridImagenGrupo,
+                                    'imagenUnidad'=>$gridImagenUnidad,
+                                    'resumenGrupo'=>$gridResumenGrupo,
+                                    'resumenUnidad'=>$gridResumenUnidad,
+                                    'univFact'=>$gridUnivFact,
+                                    'blFact'=>$gridBlFact,
+                                    'ctlFact'=>$gridCtlFact));
+}
+)->bind('fact');
 
-            /* The columns */
-            $colaCol = new \YsGridField('COLA', 'COLA');
-            $estadoCol = new \YsGridField('ESTADO', 'ESTADO');
-            $cantCol = new \YsGridField('CANT', 'CANTIDAD');
-            $porCol = new \YsGridField('POR', 'PORCENTAJE');
-
-            /* The Data (Local Type) */
-            $grid->addGridFields($colaCol, $estadoCol, $cantCol, $porCol); 
-
-            $records = new \YsGridRecordList(); // To add a list of records (Rows)
-            for ($i=0; $i < count($rows); $i++) { 
-              $record = new \YsGridRecord();
-              $record->setAttribute('COLA',$rows[$i]['COLA']);
-              $record->setAttribute('ESTADO',$rows[$i]['ESTADO']);
-              $record->setAttribute('CANT',$rows[$i]['CANT']);
-              $record->setAttribute('POR',$rows[$i]['POR']);
-              $records->append($record);
-            }
-            $grid->setRecordList($records); // set the RecordList to the Grid
-            /* jqGrid options */
-            $grid->setWidth("100%");
-            $grid->setDataType(\YsGridConstants::DATA_TYPE_LOCAL);
-            $grid->setHeight('auto');
-            $grid->setRowNum(20);
-            $grid->setRowList(array(10,30,count($rows)));
-            $grid->setViewRecords(true);
-            $grid->setSortname('name');
-            /*--*/
-            return $app['twig']->render('resumen.html', array('hoy'=>$rows,'grid' => $grid,'demora'=>$demora));
-          })
-      ->bind('resumen');
-$app->get('/facturacion',
-          function() use ($app){
-            return $app['twig']->render('fact/factGrupo.html',array());
-          })
-      ->bind('facturacion');
-$app->get('/facturacion/{periodo}/{grupo}', 
-          function (Request $request) use ($app) {
-            $grupo=$request->get('grupo');
-            $periodo=$request->get('periodo');
-            $fact=new Facturacion\facturacion($app);
-            $jq=new jqTools\jqTools();
-            /*imagen grupo*/
-            $dataImagenGrupo=$fact->getImagenGrupo($grupo,$periodo);
-            if (count($dataImagenGrupo)>0) {
-              $gridImagenGrupo=$jq->tabla($dataImagenGrupo,'IMAGEN GRUPO','imagenGrupoId');
-            } else {
-              $gridImagenGrupo=null;
-            }
-            /*imagen unidad*/
-            $dataImagenUnidad=$fact->getImagenUnidadGrupo($grupo,$periodo);
-            if (count($dataImagenUnidad)>0) {
-              $gridImagenUnidad=$jq->tablaFiltro($dataImagenUnidad,'IMAGEN UNIDAD','imagenUnidadId');
-            } else {
-              $gridImagenUnidad=null;
-            }
-            /*resumen grupo*/
-            $dataResumenGrupo=$fact->getResumenGrupo($grupo,$periodo);
-            if (count($dataResumenGrupo)>0) {
-              $gridResumenGrupo=$jq->tabla($dataResumenGrupo,'RESUMEN GRUPO','resumenGrupoId');
-            } else {
-              $gridResumenGrupo=null;
-            }
-            /*resumen unidad*/
-            $dataResumenUnidad=$fact->getResumenUnidadGrupo($grupo,$periodo);
-            if (count($dataResumenUnidad)>0) {
-              $gridResumenUnidad=$jq->tablaFiltro($dataResumenUnidad,'RESUMEN UNIDAD','resumenUnidadId');
-            } else {
-              $gridResumenUnidad=null;
-            }
-            /*universo factura*/
-            $dataUnivFact=$fact->getUnivFAct($grupo,$periodo);
-            if (count($dataUnivFact)>0) {
-              $gridUnivFact=$jq->tabla($dataUnivFact,'UNIVERSO FACTURA','univFactId');
-            } else {
-              $gridUnivFact=null;
-            }
-            /*billing factura*/ 
-            $dataBlFact=$fact->getBlFactura($grupo,$periodo);
-            if (count($dataBlFact)>0) {
-              $gridBlFact=$jq->tabla($dataBlFact,'BL FACTURA','blFactId');
-            } else {
-              $gridBlFact=null;
-            }
-
-            return $app['twig']->render('fact/factGrupo.html', 
-                                        array('imagenGrupo'=>$gridImagenGrupo,
-                                              'imagenUnidad'=>$gridImagenUnidad,
-                                              'resumenGrupo'=>$gridResumenGrupo,
-                                              'resumenUnidad'=>$gridResumenUnidad,
-                                              'univFact'=>$gridUnivFact,
-                                              'blFact'=>$gridBlFact));
-          })
-      ;
-
-$app->match('/reclamos',
-          function(Request $request) use ($app){
-            if ($request->get('periodo')) {
-              $periodo=$request->get('periodo');
-            } else {
-              $periodo=date('Ym');
-            }
-            $scenter=new Operativa\operativa($app);
-            $jq=new jqTools\jqTools();
-            /*cierre reclamos diario*/
-            $dataCerradosDia=$scenter->getCerradosDia($periodo);
-            $gridCerradosDia=$jq->tablaReclamos($dataCerradosDia,
-                                                'RECLAMOS CERRADOS POR DIA DEL PERIODO '.$periodo,
-                                                'cerradosDiaId',
-                                                $periodo);
-            return $app['twig']->render('operativa/reclamos.html',array('cerradosDia'=>$gridCerradosDia));
-          })
-      ->bind('reclamos');
+$app->match('/reclamos', function(Request $request) use ($app){
+  if ($request->get('periodo')) {
+    $periodo=$request->get('periodo');
+  } else {
+    $periodo=date('Ym');
+  }
+  $scenter=new Operativa\operativa($app);
+  $jq=new jqTools\jqTools();
+  /*cierre reclamos diario*/
+  $dataCerradosDia=$scenter->getCerradosDia($periodo);
+  $gridCerradosDia=$jq->tablaReclamos($dataCerradosDia,
+                                      'RECLAMOS CERRADOS POR DIA DEL PERIODO '.$periodo,
+                                      'cerradosDiaId',
+                                      $periodo);
+  return $app['twig']->render('operativa/reclamos.twig',array('cerradosDia'=>$gridCerradosDia));
+}
+)->before($before)
+ ->bind('reclamos');
 
 $app->error(function (\Exception $e, $code) use ($app) {
     if ($app['debug']) {

@@ -95,7 +95,13 @@ textarea {
   padding-left: 125px;
 }
 
-
+#navbar {
+  width: 95%;
+  min-width: 960px;
+  width: 1100px;
+  height: 25px;
+  padding-left: 125px;
+}
 /* Header
 -----------------------------------------------------------------------------*/
 #header {
