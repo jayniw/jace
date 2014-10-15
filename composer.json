@@ -1,49 +1,48 @@
 {
-  "name": "fabpot/silex-skeleton",
-  "description": "A pre-configured skeleton for the Silex microframework",
-  "license": "MIT",
-  "type": "project",
-  "require": {
-      "php": ">=5.3.3",
-      "silex/silex": "~1.0",
-      "silex/web-profiler": "~1.0",
-      "symfony/browser-kit": "~2.3",
-      "symfony/class-loader": "~2.3",
-      "symfony/config": "~2.3",
-      "symfony/console": "~2.3",
-      "symfony/css-selector": "~2.3",
-      "symfony/debug": "~2.3",
-      "symfony/finder": "~2.3",
-      "symfony/form": "~2.3",
-      "symfony/monolog-bridge": "~2.3",
-      "symfony/process": "~2.3",
-      "symfony/security": "~2.3",
-      "symfony/translation": "~2.3",
-      "symfony/twig-bridge": "~2.3",
-      "symfony/validator": "~2.3",
-
-      "doctrine/dbal": "2.*",
-      "symfony/doctrine-bridge": "2.*",
-      "dflydev/doctrine-orm-service-provider": "1.0.*@dev",
-      "symfony/yaml": "2.*",
-      "adldap/adldap": "dev-master",
-      "yepsua/smartwig": "1.1.*@dev",
-
-      "sorien/silex-dbal-profiler": "1.1.0",
-
-      "drush/drush": "dev-master",
-      "squizlabs/php_codesniffer": "*",
-      "fabpot/php-cs-fixer": "*",
-      "phpmd/phpmd": "*"
-  },
-  "autoload": {
-      "psr-0": { "": "src/" }
-  },
-  "extra": {
-      "branch-alias": {
-          "dev-master": "1.1.x-dev"
-      }
-  },
-  "prefer-stable": true,
-  "minimum-stability": "dev"
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    },
+    "description": "A pre-configured skeleton for the Silex microframework",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.1.x-dev"
+        }
+    },
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "name": "fabpot/silex-skeleton",
+    "prefer-stable": true,
+    "require": {
+        "adldap/adldap": "dev-master",
+        "dflydev/doctrine-orm-service-provider": "1.0.*@dev",
+        "doctrine/dbal": "2.*",
+        "fabpot/php-cs-fixer": "*",
+        "php": ">=5.3.3",
+        "silex/silex": "~1.0",
+        "silex/web-profiler": "~1.0",
+        "sorien/silex-dbal-profiler": "1.1.0",
+        "squizlabs/php_codesniffer": "*",
+        "symfony/browser-kit": "~2.3",
+        "symfony/class-loader": "~2.3",
+        "symfony/config": "~2.3",
+        "symfony/console": "~2.3",
+        "symfony/css-selector": "~2.3",
+        "symfony/debug": "~2.3",
+        "symfony/doctrine-bridge": "2.*",
+        "symfony/finder": "~2.3",
+        "symfony/form": "~2.3",
+        "symfony/monolog-bridge": "~2.3",
+        "symfony/process": "~2.3",
+        "symfony/security": "~2.3",
+        "symfony/translation": "~2.3",
+        "symfony/twig-bridge": "~2.3",
+        "symfony/validator": "~2.3",
+        "symfony/yaml": "2.*",
+        "yepsua/smartwig": "1.1.*@dev"
+    },
+    "require-dev": {
+    },
+    "type": "project"
 }
