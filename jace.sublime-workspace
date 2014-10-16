@@ -320,17 +320,6 @@
 	"buffers":
 	[
 		{
-			"contents": "{% extends \"layout.html\" %}\n\n{% block title %}USUARIOS{% endblock %}\n\n{% block content %}\n  <div id=\"content\">\n    {{ component_render(grid) }}\n  </div>\n{% endblock %}",
-			"file": "templates/backend/usuarios.twig",
-			"file_size": 175,
-			"file_write_time": 130573622921522315,
-			"settings":
-			{
-				"buffer_size": 167,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "templates/menu.twig",
 			"settings":
 			{
@@ -363,21 +352,18 @@
 			}
 		},
 		{
-			"file": "/C/Users/jduran/AppData/Roaming/Sublime Text 3/Packages/User/phpcs.sublime-settings",
+			"file": "src/controllers.php",
 			"settings":
 			{
-				"buffer_size": 2390,
-				"line_ending": "Windows"
+				"buffer_size": 7791,
+				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "<?php\n\nuse Symfony\\Component\\HttpFoundation\\Request;\nuse Symfony\\Component\\HttpFoundation\\Response;\nuse Symfony\\Component\\HttpFoundation\\JsonResponse;\nuse Symfony\\Component\\HttpFoundation\\RedirectResponse;\nuse Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException;\n\n//Request::setTrustedProxies(array('127.0.0.1'));\n\n$app->mount('/admin',include 'backend.php');\n\n$app->match('/', function (Request $request) use ($app){\n  if ($request->get('logout')){\n    $app['session']->clear();\n  }\n  if ($request->get('login')){\n    $login= $request->get('login');\n    /*conectar a AD*/\n    try{\n      $adldap = new adLDAP\\adLDAP(array('account_suffix' => \"@nuevatel.net\",\n                                        'base_dn' => \"DC=nuevatel,DC=net\",\n                                        'domain_controllers' => array (\"10.40.3.97:389\",\n                                                                       \"adserverlpz.nuevatel.net:389\")));\n    }\n    catch (adLDAPException $e) {\n      $app['session']->getFlashBag()->add('error',$e);\n      exit();\n    }\n    /*autenticar en AD*/\n    if ($adldap->authenticate($login['_username'],$login['_password'])) {\n      $app['session']->start();\n      $sec=new Seguridad\\seguridad($app);\n      $rol=$sec->getRol($login['_username']);\n      $app['session']->set('user',array('username'=>$login['_username'],\n                                        'userrol'=>$rol));\n    } else {\n      $app['session']->getFlashBag()->add('error','Usuario o contraseña incorrecto.');\n    }\n    $adldap->close();\n  }\n  return $app['twig']->render('index.html', array());\n})->bind('homepage');\n\n$before=function (Request $request) use ($app) {\n  $userSession=$app['session']->get('user');\n  if (count($userSession)==0) {\n    $app['session']->getFlashBag()->add('error','Para acceder a los modulos debe estar logueado.');\n    return $app->redirect($app['url_generator']->generate('homepage', array()));\n  }\n};\n\nif (false) {\n  echo \"nada\";\n} else {\n  $xxxXX=\"xxx\";\n}\n\n\n$app->get('/imagen', function () use ($app) {\n  $fact=new Facturacion\\facturacion($app);\n  $jq=new jqTools\\jqTools();\n  $dataTmpImagen=$fact->getImagenProcess();\n  $dataTmpImagenDem=$fact->getImagenProcessDem();\n  $gridTmpImagen=$jq->tabla($dataTmpImagen,\n                            '['.$dataTmpImagenDem[0]['AHORA'].']Porcentaje generado de la imagen. Demora de '.$dataTmpImagenDem[0]['DEM'].' minutos.',\n                            'tmpImagenId');\n  return $app['twig']->render('imagen.twig', array('grid' => $gridTmpImagen));\n}\n)->before($before)\n ->bind('imagen');\n\n$app->match('/resumen', function (Request $request) use ($app) {\n  set_time_limit(0);\n  $periodo=date('Ym')-1;\n  $fact=new Facturacion\\facturacion($app);\n  $jq=new jqTools\\jqTools();\n  $dataResumen=$fact->getResumenProcess($periodo);\n  $dataResumenDem=$fact->getResumenProcessDem();\n  $gridResumen=$jq->tablaFiltro($dataResumen,\n                          '['.$dataResumenDem[0]['AHORA'].']Porcentaje generado del resumen. Demora de '.$dataResumenDem[0]['DEM'].' minutos.',\n                          'tmpResumenId');\n  //for para obtener los datos por estado\n  //creacion de array poara almacenar los grids a mostrar en template\n  return $app['twig']->render('resumen.twig', array('grid' => $gridResumen));\n}\n)->before($before)\n ->bind('resumen');\n\n$app->match('/facturacion', function(Request $request) use ($app){\n  if ($request->get('periodo')){\n    return $app->redirect(\n    $app['url_generator']->generate('fact',\n                                    array('periodo'=>$request->get('periodo'),\n                                          'grupo'=>$request->get('grupo')))\n    );\n   }else{\n    return $app['twig']->render('fact/factGrupo.twig');\n  }\n}\n)->bind('facturacion');\n\n$app->match('/facturacion/{periodo}/{grupo}', function (Request $request) use ($app) {\n  $grupo=$request->get('grupo');\n  $periodo=$request->get('periodo');\n  $fact=new Facturacion\\facturacion($app);\n  $jq=new jqTools\\jqTools();\n  /*imagen grupo*/\n  $dataImagenGrupo=$fact->getImagenGrupo($grupo,$periodo);\n  if (count($dataImagenGrupo)>0) {\n    $gridImagenGrupo=$jq->tabla($dataImagenGrupo,'IMAGEN GRUPO','imagenGrupoId');\n  } else {\n    $gridImagenGrupo=null;\n  }\n  /*imagen unidad*/\n  $dataImagenUnidad=$fact->getImagenUnidadGrupo($grupo,$periodo);\n  if (count($dataImagenUnidad)>0) {\n    $gridImagenUnidad=$jq->tablaFiltro($dataImagenUnidad,'IMAGEN UNIDAD','imagenUnidadId');\n  } else {\n    $gridImagenUnidad=null;\n  }\n  /*resumen grupo*/\n  $dataResumenGrupo=$fact->getResumenGrupo($grupo,$periodo);\n  if (count($dataResumenGrupo)>0) {\n    $gridResumenGrupo=$jq->tabla($dataResumenGrupo,'RESUMEN GRUPO','resumenGrupoId');\n  } else {\n    $gridResumenGrupo=null;\n  }\n  /*resumen unidad*/\n  $dataResumenUnidad=$fact->getResumenUnidadGrupo($grupo,$periodo);\n  if (count($dataResumenUnidad)>0) {\n    $gridResumenUnidad=$jq->tablaFiltro($dataResumenUnidad,'RESUMEN UNIDAD','resumenUnidadId');\n  } else {\n    $gridResumenUnidad=null;\n  }\n  /*universo factura*/\n  $dataUnivFact=$fact->getUnivFAct($grupo,$periodo);\n  if (count($dataUnivFact)>0) {\n    $gridUnivFact=$jq->tabla($dataUnivFact,'UNIVERSO FACTURA','univFactId');\n  } else {\n    $gridUnivFact=null;\n  }\n  /*billing factura*/\n  $dataBlFact=$fact->getBlFactura($grupo,$periodo);\n  if (count($dataBlFact)>0) {\n    $gridBlFact=$jq->tabla($dataBlFact,'BL FACTURA','blFactId');\n  } else {\n    $gridBlFact=null;\n  }\n  /*ctl factura*/\n  $dataCtlFact=$fact->getCtlFactura($grupo,$periodo);\n  if (count($dataCtlFact)>0) {\n    $gridCtlFact=$jq->tabla($dataCtlFact,'CTL FACTURA','ctlFactId');\n  } else {\n    $gridCtlFact=null;\n  }\n  return $app['twig']->render('fact/factGrupo.twig',\n                              array('imagenGrupo'=>$gridImagenGrupo,\n                                    'imagenUnidad'=>$gridImagenUnidad,\n                                    'resumenGrupo'=>$gridResumenGrupo,\n                                    'resumenUnidad'=>$gridResumenUnidad,\n                                    'univFact'=>$gridUnivFact,\n                                    'blFact'=>$gridBlFact,\n                                    'ctlFact'=>$gridCtlFact));\n}\n)->bind('fact');\n\n$app->match('/reclamos', function(Request $request) use ($app){\n  if ($request->get('periodo')) {\n    $periodo=$request->get('periodo');\n  } else {\n    $periodo=date('Ym');\n  }\n  $scenter=new Operativa\\operativa($app);\n  $jq=new jqTools\\jqTools();\n  /*cierre reclamos diario*/\n  $dataCerradosDia=$scenter->getCerradosDia($periodo);\n  $gridCerradosDia=$jq->tablaReclamos($dataCerradosDia,\n                                      'RECLAMOS CERRADOS POR DIA DEL PERIODO '.$periodo,\n                                      'cerradosDiaId',\n                                      $periodo);\n  return $app['twig']->render('operativa/reclamos.twig',array('cerradosDia'=>$gridCerradosDia));\n}\n)->before($before)\n ->bind('reclamos');\n\n$app->error(function (\\Exception $e, $code) use ($app) {\n    if ($app['debug']) {\n        return;\n    }\n\n    // 404.html, or 40x.html, or 4xx.html, or error.html\n    $templates = array(\n        'errors/'.$code.'.html',\n        'errors/'.substr($code, 0, 2).'x.html',\n        'errors/'.substr($code, 0, 1).'xx.html',\n        'errors/default.html',\n    );\n\n    return new Response($app['twig']->resolveTemplate($templates)->render(array('code' => $code)), $code);\n});\n",
-			"file": "src/controllers.php",
-			"file_size": 7281,
-			"file_write_time": 130578521886153726,
+			"file": "src/app.php",
 			"settings":
 			{
-				"buffer_size": 7337,
+				"buffer_size": 2203,
 				"line_ending": "Unix"
 			}
 		},
@@ -385,32 +371,40 @@
 			"file": "src/backend.php",
 			"settings":
 			{
-				"buffer_size": 1012,
-				"line_ending": "Windows"
+				"buffer_size": 1309,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "src/seguridad/seguridad.php",
 			"settings":
 			{
-				"buffer_size": 1518,
-				"line_ending": "Windows"
+				"buffer_size": 2339,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "src/facturacion/facturacion.php",
 			"settings":
 			{
-				"buffer_size": 11031,
-				"line_ending": "Windows"
+				"buffer_size": 13063,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "src/jqTools/jqTools.php",
 			"settings":
 			{
-				"buffer_size": 2630,
-				"line_ending": "Windows"
+				"buffer_size": 4090,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/operativa/operativa.php",
+			"settings":
+			{
+				"buffer_size": 3334,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -421,24 +415,8 @@
 		"selected_items":
 		[
 			[
-				"code",
-				"PHP Code Sniffer: Sniff this file"
-			],
-			[
-				"php",
-				"PHP Coding Standards Fixer: Fix this file"
-			],
-			[
-				"",
-				"PHP Code Sniffer: Switch coding standard"
-			],
-			[
-				"control",
-				"Package Control: Upgrade Package"
-			],
-			[
-				"PHP Code Sniffer: ",
-				"PHP Code Sniffer: Sniff this file"
+				"ins",
+				"Package Control: Install Package"
 			],
 			[
 				"ori",
@@ -455,10 +433,6 @@
 			[
 				"pac",
 				"Package Control: Remove Package"
-			],
-			[
-				"ins",
-				"Package Control: Install Package"
 			],
 			[
 				"inst",
@@ -509,6 +483,10 @@
 				"Package Control: Remove Package"
 			],
 			[
+				"control",
+				"Package Control: Remove Package"
+			],
+			[
 				"install",
 				"Package Control: Install Package"
 			],
@@ -525,6 +503,10 @@
 				"Set Syntax: INI"
 			],
 			[
+				"",
+				"Package Control: Install Package"
+			],
+			[
 				"Snippet: ",
 				"Snippet: Long Tag"
 			],
@@ -537,18 +519,13 @@
 				"SublimeLinter: Extract Annotations"
 			]
 		],
-		"width": 408.0
+		"width": 442.0
 	},
 	"console":
 	{
 		"height": 144.0,
 		"history":
 		[
-			"clear",
-			"cls",
-			"erase",
-			"clear",
-			"cls",
 			"import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())"
 		]
 	},
@@ -563,15 +540,33 @@
 	},
 	"expanded_folders":
 	[
-		"/C/httpServer/vhosts/jace",
-		"/C/httpServer/vhosts/jace/src"
+		"//10.40.4.20/vhosts/jace",
+		"//10.40.4.20/vhosts/jace/src",
+		"//10.40.4.20/vhosts/jace/src/facturacion",
+		"//10.40.4.20/vhosts/jace/src/jqTools",
+		"//10.40.4.20/vhosts/jace/src/operativa",
+		"//10.40.4.20/vhosts/jace/src/seguridad",
+		"//10.40.4.20/vhosts/jace/templates",
+		"//10.40.4.20/vhosts/jace/templates/backend",
+		"//10.40.4.20/vhosts/jace/templates/fact",
+		"//10.40.4.20/vhosts/jace/templates/operativa",
+		"//10.40.4.20/vhosts/jace/web",
+		"//10.40.4.20/vhosts/jace/web/theme"
 	],
 	"file_history":
 	[
-		"/C/httpServer/vhosts/jace/src/controllers.php",
-		"/C/Users/jduran/AppData/Roaming/Sublime Text 3/Packages/User/phpcs.sublime-settings",
-		"/C/Users/jduran/AppData/Roaming/Sublime Text 3/Packages/Phpcs/phpcs.sublime-settings",
-		"/C/Users/jduran/AppData/Roaming/Sublime Text 3/Installed Packages/Phpcs.sublime-package",
+		"/C/Users/jayniw/AppData/Roaming/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/C/wamp/bin/php/php5.4.3/pear/PHP/CodeSniffer.php",
+		"/C/Users/jayniw/AppData/Roaming/Sublime Text 3/Packages/User/Base File.sublime-settings",
+		"/C/Users/jayniw/AppData/Roaming/Sublime Text 3/Packages/DocBlockr/Base File.sublime-settings",
+		"/C/wamp/bin/php/php5.4.3/pear/PHP/CodeSniffer/Standards/PEAR/Sniffs/Functions/FunctionCallSignatureSniff.php",
+		"/C/wamp/bin/php/php5.4.3/pear/PHP/CodeSniffer/Standards/PEAR/Sniffs/WhiteSpace/ScopeIndentSniff.php",
+		"/C/wamp/bin/php/php5.4.3/pear/PHP/CodeSniffer/Standards/Generic/Sniffs/WhiteSpace/ScopeIndentSniff.php",
+		"//10.40.4.20/vhosts/jace/vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/Generic/Sniffs/WhiteSpace/ScopeIndentSniff.php",
+		"//10.40.4.20/vhosts/jace/vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PEAR/Sniffs/Functions/FunctionCallSignatureSniff.php",
+		"/C/Users/jayniw/AppData/Roaming/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"//10.40.4.20/vhosts/jace/templates/backend/usuarios.twig",
+		"//10.40.4.20/vhosts/jace/composer.json",
 		"//10.40.4.20/vhosts/jace/templates/operativa/reclamos.twig",
 		"/C/Users/jayniw/Downloads/jquery4php/source-showcase/showcase/examples/response/gridResponse.php",
 		"/C/Users/jayniw/Downloads/query4php/source-showcase/showcase/examples/response/subGridResponse.php",
@@ -687,15 +682,7 @@
 		"/C/httpServer/vhosts/jace/.gitignore",
 		"/C/Users/jduran/Documents/facturacion/dx/lineas_dx_que facturaron.txt",
 		"/C/Users/jduran/Documents/facturacion/103119325.txt",
-		"/C/Users/jduran/AppData/Local/Temp/Rar$DIa0.794/monitorclaims.db.php",
-		"/C/Users/jduran/AppData/Local/Temp/Rar$DIa0.944/monitorclaims.db.php",
-		"/C/Users/jduran/AppData/Local/Temp/Rar$DIa0.122/class.monitorclaims.php",
-		"/C/Users/jduran/Documents/facturacion/dx/lineas_dx_que facturaron.cvs",
-		"//10.40.3.18/fact/redirects.php",
-		"//10.40.3.18/facttemplate/redirects/updaterulesBussinesJS.tpl",
-		"//10.40.3.18/facttemplate/redirects/updaterulesBussines.tpl",
-		"//10.40.3.18/fact/classes/class.redirects.php",
-		"/X/public_html/index.php"
+		"/C/Users/jduran/AppData/Local/Temp/Rar$DIa0.794/monitorclaims.db.php"
 	],
 	"find":
 	{
@@ -713,6 +700,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"JqTools",
+			"indent",
+			"expectedindent",
 			"btncito",
 			"html",
 			"app",
@@ -837,10 +827,7 @@
 			"call",
 			"In",
 			"in",
-			"and",
-			"where",
-			"from",
-			"select"
+			"and"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -864,19 +851,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "templates/backend/usuarios.twig",
+					"file": "templates/menu.twig",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 167,
+						"buffer_size": 934,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								167,
-								167
+								248,
+								248
 							]
 						],
 						"settings":
@@ -998,153 +985,6 @@
 								"Python Django": "Python"
 							},
 							"codeintel_tooltips": "popup",
-							"open_with_edit": true,
-							"sublime_auto_complete": true,
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "templates/menu.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 934,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								248,
-								248
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"codeintel": true,
-							"codeintel_config":
-							{
-								"JavaScript":
-								{
-									"codeintel_max_recursive_dir_depth": 2,
-									"codeintel_scan_files_in_project": false,
-									"javascriptExtraPaths":
-									[
-									]
-								},
-								"PHP":
-								{
-									"codeintel_max_recursive_dir_depth": 5,
-									"codeintel_scan_files_in_project": false,
-									"phpExtraPaths":
-									[
-									]
-								},
-								"Python":
-								{
-									"env":
-									{
-									}
-								}
-							},
-							"codeintel_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_live": true,
-							"codeintel_live_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_max_recursive_dir_depth": 10,
-							"codeintel_scan_exclude_dir":
-							{
-								"JavaScript":
-								[
-									"/build/",
-									"/min/"
-								]
-							},
-							"codeintel_scan_files_in_project": true,
-							"codeintel_selected_catalogs":
-							[
-								"PyWin32",
-								"jQuery",
-								"Rails"
-							],
-							"codeintel_snippets": true,
-							"codeintel_syntax_map":
-							{
-								"Python Django": "Python"
-							},
-							"codeintel_tooltips": "popup",
 							"sublime_auto_complete": true,
 							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
 							"tab_size": 2,
@@ -1154,11 +994,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 1,
 					"file": "templates/backend/backend.twig",
 					"semi_transient": false,
 					"settings":
@@ -1305,7 +1145,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 2,
 					"file": "templates/navbar.twig",
 					"semi_transient": false,
 					"settings":
@@ -1449,11 +1289,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 3,
 					"file": "templates/layout.html",
 					"semi_transient": false,
 					"settings":
@@ -1597,72 +1437,30 @@
 						"translation.y": 126.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
-					"buffer": 5,
-					"file": "/C/Users/jduran/AppData/Roaming/Sublime Text 3/Packages/User/phpcs.sublime-settings",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2390,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								496,
-								496
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
+					"buffer": 4,
 					"file": "src/controllers.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7337,
+						"buffer_size": 7791,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								581,
-								581
+								826,
+								826
 							]
 						],
 						"settings":
@@ -1790,27 +1588,175 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 76.0,
+						"translation.y": 210.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "src/backend.php",
+					"buffer": 5,
+					"file": "src/app.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1012,
+						"buffer_size": 2203,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								527,
-								527
+								122,
+								122
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/backend.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1309,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1029,
+								1029
 							]
 						],
 						"settings":
@@ -1934,38 +1880,36 @@
 							"codeintel_tooltips": "popup",
 							"open_with_edit": true,
 							"sublime_auto_complete": true,
-							"syntax": "Packages/PHP/PHP.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/PHP/PHP.tmLanguage"
 						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.x": -0.0,
+						"translation.y": 336.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 3,
 			"sheets":
 			[
 				{
-					"buffer": 8,
+					"buffer": 7,
 					"file": "src/seguridad/seguridad.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1518,
+						"buffer_size": 2339,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1183,
-								1183
+								740,
+								740
 							]
 						],
 						"settings":
@@ -1973,16 +1917,16 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
-								"bh_unmatched_content"
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
 							],
 							"codeintel": true,
 							"codeintel_config":
@@ -2093,27 +2037,323 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 554.0,
+						"translation.y": 294.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 8,
 					"file": "src/facturacion/facturacion.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11031,
+						"buffer_size": 13063,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								139,
-								139
+								674,
+								754
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 294.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "src/jqTools/jqTools.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4090,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								327,
+								646
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 126.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "src/operativa/operativa.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3334,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								331,
+								6
 							]
 						],
 						"settings":
@@ -2245,50 +2485,6 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "src/jqTools/jqTools.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2630,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1059,
-								1059
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/PHP/PHP.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 322.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
 					"type": "text"
 				}
 			]

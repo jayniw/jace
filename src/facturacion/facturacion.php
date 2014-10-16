@@ -1,12 +1,25 @@
 <?php
+/**
+ * archivo que tiene la definicion de la clase facturacion
+ *
+ * PHP version 5.4.3
+ *
+ * @category File
+ * @package  Facturacion
+ * @author   Jalir Duran <jalir.duran@nuevatel.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     http://10.40.4.20/bill/index_dev.php/
+ *
+ */
 namespace Facturacion;
 
  /**
  * Clase para el manejo de la facturacion por periodo.
+ *
  * @category PHP
  * @package  BILLING_INTERFAZ
  * @author   Jalir Duran <jalir.duran@nuevatel.com>
- * @license  http://10.40.4.20/bill/index_dev.php/
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link     http://10.40.4.20/bill/index_dev.php/
  *
  */
@@ -14,14 +27,16 @@ class Facturacion
 {
   /**
    * Inicializacion de la clase
+   *
    * @param object $app entorno de la aplicacion
    */
-  function __construct($app)
+  public function __construct($app)
   {
     $this->app= $app;
   }
   /**
    * obtiene los registros por estado del proceso de generaicon de imagen
+   *
    * @return array
    */
   public function getImagenProcess()
@@ -40,6 +55,7 @@ class Facturacion
   }
   /**
    * obtiene la demora de los jobs de imagen
+   *
    * @return array
    */
   public function getImagenProcessDem()
@@ -52,7 +68,9 @@ class Facturacion
   }
   /**
    * procesar resumen de un periodo, avance
-   * @param  string $periodo
+   *
+   * @param string $periodo codgio de periodo
+   *
    * @return array
    */
   public function getResumenProcess($periodo)
@@ -72,8 +90,10 @@ class Facturacion
   }
   /**
    * procesar resumen de un periodo, avance por estado y cola
+   *
    * @param string $periodo periodo de facturacion
-   * @param string $estado estado del registro
+   * @param string $estado  estado del registro
+   *
    * @return array
    */
   public function getResumenProcessEstado($periodo, $estado)
@@ -92,6 +112,11 @@ class Facturacion
                                Order By 1 asc";
     return $this->app['db']->fetchAll($sqlResumenProcessEstado);
   }
+  /**
+   * Demora del proceso de generaicon resumen
+   *
+   * @return array resultado de la consulta
+   */
   public function getResumenProcessDem()
   {
     $sqlResumenProcessDem="SELECT max( round(((sysdate-THIS_DATE)*60*24),2))dem,
@@ -102,8 +127,10 @@ class Facturacion
   }
   /**
    * obtener los datos de la imagen de un grupo de un periodo
-   * @param  number $grupo   id_comunidad, id_grupo
-   * @param  string $periodo periodo a evaluar
+   *
+   * @param number $grupo   id_comunidad, id_grupo
+   * @param string $periodo periodo a evaluar
+   *
    * @return array          data devuelta
    */
   public function getImagenGrupo($grupo, $periodo)
@@ -118,16 +145,18 @@ class Facturacion
                             COD_ERROR,
                             MENSAJE_ERROR,
                             COD_USUARIO as usr,
-                            to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
+                            to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') fecha
                        from billing.bl_imagen_grupo
                       where cod_periodo='$periodo'
                         and ID_GRUPO =$grupo";
     return $this->app['db']->fetchAll($sqlImagenGrupo);
- }
+  }
   /**
    * Obtener el detalle de unidades de la imagen de un grupo en un periodo
-   * @param  number $grupo   id de grupo
-   * @param  varchar $periodo codioo de periodo
+   *
+   * @param number  $grupo   id de grupo
+   * @param varchar $periodo codioo de periodo
+   *
    * @return array          resultado de la busqueda
    */
   public function getImagenUnidadGrupo($grupo, $periodo)
@@ -143,16 +172,19 @@ class Facturacion
                                   LIMITE_CREDITO as LCRE,
                                   LIMITE_CONSUMO as LCON,
                                   COD_USUARIO as usr,
-                                  to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
+                                  to_char(FECHA_TRANSACCION,
+                                         'dd.mm.yyyy hh24:mi:ss') fecha
                              from billing.bl_imagen_unidad
                             where cod_periodo='$periodo'
                               and ID_GRUPO =$grupo";
     return $this->app['db']->fetchAll($sqlImagenUnidadGrupo);
- }
+  }
   /**
    * Obtener el resumen de facturacion de un grupo en un periodo
-   * @param  integer $grupo   id de grupo
-   * @param  varchar $periodo codigo de periodo
+   *
+   * @param integer $grupo   id de grupo
+   * @param varchar $periodo codigo de periodo
+   *
    * @return array          resultado de la busqueda
    */
   public function getResumenGrupo($grupo, $periodo)
@@ -166,13 +198,21 @@ class Facturacion
                              CANTIDAD as cant,
                              to_char(SALDO,'FM9999990.00') as imp,
                              COD_USUARIO as usr,
-                             to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
+                             to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') fecha
                         from billing.BL_resumen_grupo rg
                        where cod_periodo='$periodo'
                          and id_grupo=$grupo
                        order by cargo ";
     return $this->app['db']->fetchAll($sqlResumenGrupo);
   }
+  /**
+   * Obtener el detalle de unidades del resumen de un grupo en un periodo
+   *
+   * @param number  $grupo   id de grupo
+   * @param varchar $periodo codigo de periodo
+   *
+   * @return array          resultado de la busqueda
+   */
   public function getResumenUnidadGrupo($grupo, $periodo)
   {
     $sqlResumenUnidadGrupo="SELECT ID_CLIENTE,
@@ -180,19 +220,28 @@ class Facturacion
                                    ID_CARGO as cargo,
                                    (select descripcion
                                       from billing.CF_CARGO
-                                     where ID_CARGO=ru.ID_CARGO) as descripcion_cargo,
+                                     where ID_CARGO=ru.ID_CARGO) descripcion_cargo,
                                    ru.cod_carrier CARRIER,
                                    LAYOUT,
                                    COD_LAYOUT,
                                    CANTIDAD as cant,
                                    to_char(IMPORTE,'FM9999990.00') as imp,
                                    COD_USUARIO as usr,
-                                   to_char(FECHA_TRANSACCION,'dd.mm.yyyy hh24:mi:ss') as fecha
+                                   to_char(FECHA_TRANSACCION,
+                                          'dd.mm.yyyy hh24:mi:ss') fecha
                               from billing.BL_resumen_unidad ru
                              where cod_periodo='$periodo'
                                and ID_GRUPO =$grupo";
     return $this->app['db']->fetchAll($sqlResumenUnidadGrupo);
   }
+  /**
+   * Obtener el detalle de univ_factura
+   *
+   * @param number  $grupo   id de grupo
+   * @param varchar $periodo codigo de periodo
+   *
+   * @return array          resultado de la busqueda
+   */
   public function getUnivFact($grupo, $periodo)
   {
     $sqlUnivFact="SELECT ID_CLIENTE,
@@ -209,6 +258,14 @@ class Facturacion
                    where cod_periodo='$periodo' and id_grupo=$grupo";
     return $this->app['db']->fetchAll($sqlUnivFact);
   }
+  /**
+   * Obtener el detalle de bl_factura
+   *
+   * @param number  $grupo   id de grupo
+   * @param varchar $periodo codigo de periodo
+   *
+   * @return array          resultado de la busqueda
+   */
   public function getBlFactura($grupo, $periodo)
   {
     $sqlBlFactura="SELECT ID_CLIENTE,
@@ -227,7 +284,9 @@ class Facturacion
   }
   /**
    * obtener el id_cobranza del grupo
-   * @param  number $grupo ID DEL GRUPO
+   *
+   * @param number $grupo ID DEL GRUPO
+   *
    * @return number        id de cobranza
    */
   public function getIdCobranza($grupo)
@@ -244,8 +303,10 @@ class Facturacion
   }
   /**
    * obtener datos de factura en CTL para un grupo y periodo
-   * @param  number $grupo   id del grupo
-   * @param  string $periodo codigo de periodo
+   *
+   * @param number $grupo   id del grupo
+   * @param string $periodo codigo de periodo
+   *
    * @return array          factura del grupo
    */
   public function getCtlFactura($grupo, $periodo)
@@ -259,7 +320,7 @@ class Facturacion
                            Nvl(Nvl(Imp_Gral, 0) + Nvl(Imp_Gral_Entel, 0) +
                                Nvl(Imp_Boliviatel, 0) + Nvl(Imp_Telecel, 0) +
                                Nvl(Imp_Teledata, 0) + Nvl(Imp_Nuevatel_Ld, 0) +
-                               Nvl(Imp_Its, 0) + Nvl(Imp_Cotel, 0) + Nvl(Imp_Unete, 0) +
+                               Nvl(Imp_Its, 0)+Nvl(Imp_Cotel, 0)+Nvl(Imp_Unete, 0) +
                                Nvl(Imp_Bossnet, 0) + Nvl(Imp_Bolitel, 0) +
                                Nvl(Imp_Transmedes, 0), 0) Imp_Ld,
                            Estado,

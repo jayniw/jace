@@ -20,7 +20,7 @@
     <div id="sideLeft">
       {% if app.session.get('user').username is defined %}
         {% embed "menu.twig" with {'rol':app.session.get('user').userrol} %}
-      {% endembed %}
+        {% endembed %}
       {% endif %}
     </div>
     <div id="wrapper">
