@@ -1,6 +1,18 @@
 {% block menu %}
 {% set periodo="now"|date("Ym")-1 %}
+{% set menu = app.session.get('menu') %}
 <table>
+  {% for menus in menu %}
+  <tr><td></td></tr>
+  <tr>
+    <td>
+      <a href="{{ menus.ruta }}"
+         class="btn_menu">{{ menus.nombre }}</a>
+    </td>
+  </tr>
+
+  {% endfor %}
+
   {% if rol==1 %}
   <tr><td></td></tr>
   <tr>

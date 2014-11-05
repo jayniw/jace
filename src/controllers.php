@@ -34,8 +34,7 @@ $app->match(
         $adldap = new adLDAP\adLDAP(
           array('account_suffix' => "@nuevatel.net",
                 'base_dn' => "DC=nuevatel,DC=net",
-                'domain_controllers' => array ("10.40.3.97:389",
-                                               "adserverlpz.nuevatel.net:389"))
+                'domain_controllers' => array ("nuevatel.net:389"))
         );
       } catch (adLDAPException $e) {
         $app['session']->getFlashBag()->add('error', $e);
@@ -48,9 +47,19 @@ $app->match(
         $rol=$sec->getRol($login['_username']);
         $app['session']->set(
           'user',
-          array('username'=>$login['_username'],
-                                           'userrol'=>$rol)
+          array('username'=>$login['_username'], 'userrol'=>$rol)
         );
+        $menuRol=$sec->getMenuRol($rol);
+        $app['session']->set('menu', array());
+        if (count($menuRol)>0) {
+          for ($i=0; $i < count($menuRol); $i++) {
+            $menu[$i]=array('nombre' => $menuRol[$i]['MENU'],
+                            'ruta' => $app['url_generator']
+                                      ->generate($menuRol[$i]['RUTA'])
+                          );
+          }
+          $app['session']->set('menu', $menu);
+        }
       } else {
         $app['session']->getFlashBag()->add(
           'error',

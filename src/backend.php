@@ -29,11 +29,17 @@ $backend->before(
 $backend->match(
   '/',
   function () use ($app) {
+    $mon=new Monitor\Monitor($app);
+    $jq=new jqTools\JqTools();
+    $dataLogRedirect=$mon->getLogRedirect();
+    $gridLogRedirect=$jq->tabla(
+      $dataLogRedirect,
+      'LOG REDIRECCIONAMIENTO',
+      'logRedirectId'
+    );
     return $app['twig']->render(
       'backend/backend.twig',
-      array(
-      '' => '',
-      )
+      array('grid' => $gridLogRedirect)
     );
   }
 )->bind('admin');
@@ -55,5 +61,33 @@ $backend->match(
     );
   }
 )->bind('usuarios');
+
+$backend->match(
+  '/roles',
+  function () use ($app) {
+    $sec=new Seguridad\Seguridad($app);
+    $jq=new jqTools\JqTools();
+    $dataRoles=$sec->getRoles();
+    $gridRoles=$jq->tabla($dataRoles, 'ROLES', 'rolesId');
+    return $app['twig']->render(
+      'backend/roles.twig',
+      array('grid' => $gridRoles)
+    );
+  }
+)->bind('roles');
+
+$backend->match(
+  '/menu',
+  function () use ($app) {
+    $sec=new Seguridad\Seguridad($app);
+    $jq=new jqTools\JqTools();
+    $dataMenu=$sec->getMenu();
+    $gridMenu=$jq->tabla($dataMenu, 'Menu', 'menuId');
+    return $app['twig']->render(
+      'backend/menu.twig',
+      array('grid' => $gridMenu)
+    );
+  }
+)->bind('menu');
 
 return $backend;

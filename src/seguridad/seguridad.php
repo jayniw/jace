@@ -54,6 +54,45 @@ class Seguridad
     return $rol[0]['ID_ROL'];
   }
   /**
+   * Obtener los roles configurados
+   *
+   * @return array roles configurados en el sistema
+   */
+  public function getRoles()
+  {
+    $sqlRoles="SELECT id,
+                      descripcion,
+                      estado,
+                      to_char(created_at, 'dd.mm.yyyy hh24:mi:ss') fecha_creacion,
+                      created_by creado_por,
+                      to_char(updated_at,
+                              'dd.mm.yyyy hh24:mi:ss') fecha_actualizacion,
+                      updated_by actualizado_por
+                 from itjduran.bill_rol
+                order by estado,id";
+    return $this->app['db']->fetchAll($sqlRoles);
+  }
+  /**
+   * Obtener los menus de la aplicacion
+   *
+   * @return array menus de la aplicacion
+   */
+  public function getMenu()
+  {
+    $sqlMenu="SELECT id,
+                     nombre,
+                     ruta,
+                     estado,
+                     to_char(created_at, 'dd.mm.yyyy hh24:mi:ss') fecha_creacion,
+                     created_by creado_por,
+                     to_char(updated_at,
+                             'dd.mm.yyyy hh24:mi:ss') fecha_actualizacion,
+                     updated_by actualizado_por
+                from itjduran.bill_menu
+               order by estado,id";
+    return $this->app['db']->fetchAll($sqlMenu);
+  }
+  /**
    * Obtener el menu a mostra segun el rol
    *
    * @param number $rol id del rol del usuario
@@ -62,8 +101,27 @@ class Seguridad
    */
   public function getMenuRol($rol)
   {
-    $sqlMenuRol="";
+    if ($rol==1) {
+      $sqlMenuRol="SELECT nombre menu, ruta
+                     FROM itjduran.bill_menu
+                    ORDER BY estado,id";
+    } else {
+      $sqlMenuRol="SELECT m.nombre menu,
+                          m.ruta
+                     FROM itjduran.bill_rol_menu rm,
+                          itjduran.bill_menu m,
+                          itjduran.bill_rol r
+                    where rm.id_rol = r.id
+                      and rm.id_menu = m.id
+                      and r.estado = 'A'
+                      and m.estado = 'A'
+                      and rm.estado = 'A'
+                      and rm.id_rol = $rol
+                    order by rm.estado, rm.id_rol, rm.id_menu";
+    }
 
+
+    return $this->app['db']->fetchAll($sqlMenuRol);
   }
   /**
    * obtener la lista de usuarios del modulo billing
@@ -89,5 +147,4 @@ class Seguridad
                    order by rol, id_usuario";
     return $this->app['db']->fetchAll($sqlUsuarios);
   }
-
 }
