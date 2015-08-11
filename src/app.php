@@ -63,6 +63,16 @@ $app->register(
                     'password'      => 'service',
                     'charset'       => 'utf8'
                     ),
+            'itsm' => array (
+                    'driver'        => 'pdo_oci',
+                    'host'          => '10.49.3.137',
+                    'port'          => '1521',
+                    'servicename'   => 'itsm',
+                    'dbname'        => 'itsm',
+                    'user'          => 'bil_app',
+                    'password'      => 'appbilmon.2015',
+                    'charset'       => 'utf8'
+                    ),
           ),
         )
 );

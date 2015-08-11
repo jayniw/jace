@@ -21,6 +21,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 $app->mount('/admin', include 'backend.php');
 
+$app->mount('/factPer', include 'fact.php');
+
 $app->match(
   '/',
   function (Request $request) use ($app) {
@@ -49,7 +51,7 @@ $app->match(
           'user',
           array('username'=>$login['_username'], 'userrol'=>$rol)
         );
-        $menuRol=$sec->getMenuRol($rol);
+        $menuRol=$sec->getRolMenu($rol);
         $app['session']->set('menu', array());
         if (count($menuRol)>0) {
           for ($i=0; $i < count($menuRol); $i++) {
@@ -83,51 +85,210 @@ $before=function (Request $request) use ($app) {
   }
 };
 
-$app->get(
-  '/imagen',
+$app->match(
+  '/monitor',
   function () use ($app) {
-    $fact=new Facturacion\Facturacion($app);
     $jq=new jqTools\JqTools();
-    $dataTmpImagen=$fact->getImagenProcess();
-    $dataTmpImagenDem=$fact->getImagenProcessDem();
-    $gridTmpImagen=$jq->tabla(
-      $dataTmpImagen,
-      '['.$dataTmpImagenDem[0]['AHORA'].
-      ']Porcentaje generado de la imagen. Demora de '.
-      $dataTmpImagenDem[0]['DEM'].' minutos.',
-      'tmpImagenId'
-    );
-    return $app['twig']->render('imagen.twig', array('grid' => $gridTmpImagen));
+    /*obtener los tickets pendientes y su demora para clientes internos*/
+    $ticket=new Operativa\Operativa($app);
+    $dataIncPend=$ticket->getIncidentesPenDet();
+    $dataIncPendRes=$ticket->getIncPendResumen();
+    $dataProbBill=$ticket->getProbPend();
+
+    return $app['twig']->render('monitor.twig',array(
+          'dataIncPendRes'=>$dataIncPendRes,
+          'dataProbBill'=>$dataProbBill,
+          'dataIncPend'=> $dataIncPend
+          ));
   }
-)->before($before)
- ->bind('imagen');
+)->bind('monitor');
 
 $app->match(
-  '/resumen',
+  '/itsm',
+  function () use ($app) {
+  /*Obtener incidentes de IT*/
+  $ticket=new Operativa\Operativa($app);
+  $jq=new jqTools\JqTools();
+  $dataIncBill=$ticket->getIncPendResumen('facturacion');
+  $dataIncPend=$ticket->getIncidentesPenDet('facturacion');
+  $dataProbBill=$ticket->getProbPend('facturacion');
+  $dataIncRep=$ticket->getIncRep(date('Ymd'));
+  $dataRepPeriodo=$ticket->getRepPeriodo(date('Ym'));
+  if (count($dataRepPeriodo)==0) {
+    $gridRepPeriodo=null;
+  } else {
+    $gridRepPeriodo=$jq->tabla($dataRepPeriodo,
+                               'Reporte de periodo',
+                               'repPeriodoId');
+  }
+  return $app['twig']->render('operativa/itsm.twig',array(
+      'dataIncBill' => $dataIncBill,
+      'dataProbBill'=>$dataProbBill,
+      'dataIncRep' => $dataIncRep,
+      'gridRepPeriodo' => $gridRepPeriodo,
+      'dataIncPend' => $dataIncPend,
+      'dataIncPendRes' => $dataIncBill,
+      ));
+}
+)->bind('itsm');
+
+$app->match(
+  '/refact',
   function (Request $request) use ($app) {
-    set_time_limit(0);
-    $periodo=date('Ym')-1;
+    $periodo=date('Ym', mktime(0, 0, 0, date("m")-1, date("d"), date("Y")));
     $fact=new Facturacion\Facturacion($app);
     $jq=new jqTools\JqTools();
-    $dataResumen=$fact->getResumenProcess($periodo);
-    $dataResumenDem=$fact->getResumenProcessDem();
-    $gridResumen=$jq->tablaFiltro(
-      $dataResumen,
-      '['.$dataResumenDem[0]['AHORA'].
-      ']Porcentaje generado del resumen. Demora de '.
-      $dataResumenDem[0]['DEM'].' minutos.',
-      'tmpResumenId'
-    );
-    //for para obtener los datos por estado
-    //creacion de array poara almacenar los grids a mostrar en template
-    return $app['twig']->render('resumen.twig', array('grid' => $gridResumen));
+    /*se registra la solicitud de refacturacion*/
+    $grupo=$request->get('grupo');
+    $motivo=$request->get('motivo');
+    if ($grupo<>null || $motivo<>null) {
+      $usuarioSession=$app['session']->get('user');
+      if ($usuarioSession == null) {
+        $usuario=$app['request']->server->get("REMOTE_ADDR");
+      } else {
+        $usuario=$usuarioSession['username'];
+      }
+      $regIns=$fact->setRefactGrupo($grupo, $motivo, $periodo, $usuario);
+    }
+    /*se obtiene la data de refacturacion del periodo*/
+    $dataRefact=$fact->getRefactPeriodo($periodo);
+    if (count($dataRefact)==0) {
+      $gridRefact=null;
+    } else {
+      $gridRefact=$jq->tablaFiltro($dataRefact, 'Refacturacion', 'refactId');
+    }
+    return $app['twig']->render('fact/refact.twig', array('grid' => $gridRefact, ));
   }
 )->before($before)
- ->bind('resumen');
+ ->bind('refact');
+
+
+
+$app->match(
+  '/grupo',
+  function (Request $request) use ($app) {
+    if ($request->get('grupo')) {
+      $grupo=$request->get('grupo');
+      $cli=new Cliente\Cliente($app);
+      $jq=new jqTools\JqTools();
+      /*grupo*/
+      $dataGrupo=$cli->getGrupo($grupo);
+      if (count($dataGrupo)>0) {
+        $gridGrupo=$jq->tabla($dataGrupo, 'GRUPO', 'GrupoId');
+      } else {
+        $gridGrupo=null;
+      }
+      /*grupo historico*/
+      $dataGrupoHist=$cli->getGrupoHist($grupo);
+      if (count($dataGrupoHist)>0) {
+        $gridGrupoHist=$jq->tabla($dataGrupoHist, 'GRUPO HISTORICO', 'GrupoHistd');
+      } else {
+        $gridGrupoHist=null;
+      }
+      /*sd grupo*/
+      $dataSdGrupo=$cli->getSdGrupo($grupo);
+      if (count($dataSdGrupo)>0) {
+        $gridSdGrupo=$jq->tabla($dataSdGrupo, 'SD GRUPO', 'sdGrupoid');
+      } else {
+        $gridSdGrupo=null;
+      }
+      return $app['twig']->render(
+        'cliente/grupo.twig',
+        array('idGrupo' => $grupo,
+              'grupo' => $gridGrupo,
+              'grupoHist' => $gridGrupoHist,
+              'sdGrupo' => $gridSdGrupo,
+              )
+        );
+    } else {
+      return $app['twig']->render('cliente/grupo.twig');
+    }
+
+  }
+)->before($before)
+ ->bind('grupo');
+
+$app->match(
+  '/unidad',
+  function (Request $request) use ($app) {
+    if ($request->get('unidad')) {
+      $unidad=$request->get('unidad');
+      $cli=new Cliente\Cliente($app);
+      $jq=new jqTools\JqTools();
+      /*unidad*/
+      $dataUnidad=$cli->getUnidad($unidad);
+      if (count($dataUnidad)>0) {
+        $gridUnidad=$jq->tabla($dataUnidad, 'UNIDAD', 'unidadId');
+      } else {
+        $gridUnidad=null;
+      }
+      /*unidad historico*/
+      $dataUnidadHist=$cli->getUnidadHist($unidad);
+      if (count($dataUnidadHist)>0) {
+        $gridUnidadHist=$jq->tabla($dataUnidadHist, 'UNIDAD HISTORICO', 'unidadHistId');
+      } else {
+        $gridUnidadHist=null;
+      }
+      /*unidad estado historico*/
+      $dataUnidadEstadosHist=$cli->getUnidadEstadosHist($unidad);
+      if (count($dataUnidadEstadosHist)>0) {
+        $gridUnidadEstadosHist=$jq->tabla($dataUnidadEstadosHist, 'UNIDAD ESTADOS HISTORICO', 'unidadEstadosHistId');
+      } else {
+        $gridUnidadEstadosHist=null;
+      }
+      /*tr unidad cod layout*/
+      $dataUnidadLayout=$cli->getUnidadLayout($unidad);
+      if (count($dataUnidadLayout)>0) {
+        $gridUnidadLayout=$jq->tabla($dataUnidadLayout, 'UNIDAD LAYOUT HISTORICO', 'UnidadLayoutId');
+      } else {
+        $gridUnidadLayout=null;
+      }
+
+      return $app['twig']->render(
+        'cliente/unidad.twig',
+        array('idUnidad'=>$unidad,
+              'unidad'=>$gridUnidad,
+              'unidadHist'=>$gridUnidadHist,
+              'unidadEstadosHist'=>$gridUnidadEstadosHist,
+              'unidadLayout'=>$gridUnidadLayout,)
+      );
+    } else {
+      return $app['twig']->render('cliente/unidad.twig');
+    }
+  }
+)->before($before)
+ ->bind('unidad');
+
+$app->match(
+  '/reclamos',
+  function (Request $request) use ($app) {
+    if ($request->get('periodo')) {
+      $periodo=$request->get('periodo');
+    } else {
+      $periodo=date('Ym');
+    }
+    $scenter=new Operativa\Operativa($app);
+    $jq=new jqTools\JqTools();
+    /*cierre reclamos diario*/
+    $dataCerradosDia=$scenter->getCerradosDia($periodo);
+    $gridCerradosDia=$jq->tablaReclamos(
+      $dataCerradosDia,
+      'RECLAMOS CERRADOS POR DIA DEL PERIODO '.$periodo,
+      'cerradosDiaId',
+      $periodo
+    );
+    return $app['twig']->render(
+      'operativa/reclamos.twig',
+      array('cerradosDia'=>$gridCerradosDia)
+    );
+  }
+)->before($before)
+ ->bind('reclamos');
 
 $app->match(
   '/facturacion',
   function (Request $request) use ($app) {
+    set_time_limit(0);
     if ($request->get('periodo')) {
       return $app->redirect(
         $app['url_generator']->generate(
@@ -137,7 +298,20 @@ $app->match(
         )
       );
     } else {
-      return $app['twig']->render('fact/factGrupo.twig');
+      $i=1;
+      $periodo=date('Ym');
+      while ($i <= 6) {
+        $periodo=date('Ym',
+                      strtotime('-'.$i.' months',
+                                strtotime($periodo))
+                     );
+        $periodos[$i]=$periodo;
+        $i++;
+      }
+      return $app['twig']->render(
+        'fact/factGrupo.twig',
+        array('periodos' => $periodos, )
+        );
     }
   }
 )->bind('facturacion');
@@ -222,32 +396,6 @@ $app->match(
     );
   }
 )->bind('fact');
-
-$app->match(
-  '/reclamos',
-  function (Request $request) use ($app) {
-    if ($request->get('periodo')) {
-      $periodo=$request->get('periodo');
-    } else {
-      $periodo=date('Ym');
-    }
-    $scenter=new Operativa\Operativa($app);
-    $jq=new jqTools\JqTools();
-    /*cierre reclamos diario*/
-    $dataCerradosDia=$scenter->getCerradosDia($periodo);
-    $gridCerradosDia=$jq->tablaReclamos(
-      $dataCerradosDia,
-      'RECLAMOS CERRADOS POR DIA DEL PERIODO '.$periodo,
-      'cerradosDiaId',
-      $periodo
-    );
-    return $app['twig']->render(
-      'operativa/reclamos.twig',
-      array('cerradosDia'=>$gridCerradosDia)
-    );
-  }
-)->before($before)
- ->bind('reclamos');
 
 $app->error(
   function (\Exception $e, $code) use ($app) {

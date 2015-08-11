@@ -33,24 +33,18 @@ class Facturacion
   public function __construct($app)
   {
     $this->app= $app;
+    $sqlNlsDateFormat="ALTER SESSION SET NLS_DATE_FORMAT = 'DD.MM.YYYY HH24:MI:SS'";
+    $nlsDateFormat=$this->app['db']->prepare($sqlNlsDateFormat);
+    $nlsDateFormat->execute();
   }
   /**
    * obtiene los registros por estado del proceso de generaicon de imagen
    *
    * @return array
    */
-  public function getImagenProcess()
+  public function getImagenProcess($periodo)
   {
-    $sqlImagenProcess="SELECT Cola, Estado, Cant, Round(Cant * 100 / Tot, 2) por
-                         From (Select Cola,
-                                      a.Estado,
-                                      Count(*) Cant,
-                                      (Select Count(*)
-                                         From billing.Bl_Tmp_Imagen_Facturacion
-                                        Where Cola = a.Cola) Tot
-                                 From billing.Bl_Tmp_Imagen_Facturacion a
-                                Group By Cola, Estado
-                                Order By 2,1)";
+    $sqlImagenProcess="SELECT cola,total,pen,ok,error from table(itjduran.pck_facturacion.info_imagen('$periodo'))";
     return $this->app['db']->fetchAll($sqlImagenProcess);
   }
   /**
@@ -58,12 +52,16 @@ class Facturacion
    *
    * @return array
    */
-  public function getImagenProcessDem()
+  public function getImagenProcessDem($periodo)
   {
-    $sqlImagenProcessDem="SELECT max( round(((sysdate-THIS_DATE)*60*24),2))dem,
-                                 to_char(sysdate,'dd.mm.yyyy hh24:mi:ss') ahora
-                            from user_jobs
-                           where lower(what) like '%crear_imagen%'";
+    $sqlImagenProcessDem="SELECT proceso,
+                                 inicio,
+                                 fin,
+                                 itjduran.format_time((nvl(fin, sysdate)-inicio) * 24) demora
+                            from itjduran.log_proc_time
+                           where lower(proceso) like ('%imagen%')
+                             and to_char(created_at, 'yyyymm') = '$periodo'
+                           order by id";
     return $this->app['db']->fetchAll($sqlImagenProcessDem);
   }
   /**
@@ -171,6 +169,7 @@ class Facturacion
                                   FACTURABLE as F,
                                   LIMITE_CREDITO as LCRE,
                                   LIMITE_CONSUMO as LCON,
+                                  id_cta_corriente as cta_corriente,
                                   COD_USUARIO as usr,
                                   to_char(FECHA_TRANSACCION,
                                          'dd.mm.yyyy hh24:mi:ss') fecha
@@ -332,5 +331,166 @@ class Facturacion
                      Where Cod_Cliente = $idCobranza
                        And Periodo = '$periodo'";
     return $this->app['db']->fetchAll($sqlCtlFactura);
+  }
+  /**
+   * Obtener la lista de solicitudes de refacturacion del periodo
+   *
+   * @param string $periodo Periodo a evaluar
+   *
+   * @return array data con los resultados
+   */
+  public function getRefactPeriodo($periodo)
+  {
+    $sqlRefactPeriodo="SELECT t.id_grupo,
+                              t.solicitante,
+                              to_char(fecha, 'dd.mm.yyyy hh24:mi:ss') fch_solicitud,
+                              t.motivo,
+                              to_char(t.fecha_resp, 'dd.mm.yyyy hh24:mi:ss') fch_respuesta,
+                              respuesta
+                         from billing.refacturar t
+                        where t.cod_periodo = '$periodo'
+                        order by fecha desc";
+    return $this->app['db']->fetchAll($sqlRefactPeriodo);
+  }
+  /**
+   * Registrar un grupo a refacturar
+   *
+   * @param number $grupo   id del grupo a refacturar
+   * @param string $motivo  motivo por le cual se requiere refacturar
+   * @param string $periodo periodo a refacturar
+   */
+  public function setRefactGrupo($grupo, $motivo, $periodo, $usuario)
+  {
+    $smtRefactGrupo="INSERT into billing.refacturar
+                            (id_grupo, motivo, fecha, solicitante, cod_periodo)
+                          values
+                            ($grupo, '$motivo', sysdate, '$usuario', '$periodo')";
+    $count = $this->app['db']->executeUpdate($smtRefactGrupo);
+    return $count;
+  }
+  /**
+   * Obtener el prog de procesos ejecutados y su tiempo de duracion
+   * @return array data de logs del periodo
+   */
+  public function getLogProgTime()
+  {
+    $sqlLogProgTime="SELECT t.proceso,
+                            to_char(t.inicio, 'dd.mm.yyyy hh24:mi:ss') inicio,
+                            to_char(t.fin, 'dd.mm.yyyy hh24:mi:ss') fin,
+                            itjduran.format_time(round((nvl(t.fin,sysdate)-t.inicio)*24,2)) demora
+                       from itjduran.log_proc_time t
+                      where t.created_at >= trunc(sysdate - 1)
+                      order by id desc";
+    return  $this->app['db']->fetchAll($sqlLogProgTime);
+  }
+  /**
+   * Obtiene la cantidad de abonos de un periodo para un grupo plan
+   * @param  string $periodo   cod_periodo
+   * @param  string $grupoPlan cod_grupo_plan, cod_clasificacion
+   * @return integer            cantidad de abonos
+   */
+  public function getTendenciaAbonoGrupoPlan($periodo,$grupoPlan)
+  {
+    $sqlTendenciaAbonoGrupoPlan="SELECT COUNT(unique name) as cant
+                                   FROM billing.BL_ABONO
+                                  WHERE cod_periodo = '$periodo'
+                                    and grupo_plan = '$grupoPlan'
+                                    AND estado_abono != 'ERR'";
+    $data= $this->app['db']->fetchAll($sqlTendenciaAbonoGrupoPlan);
+    return $data[0]['CANT'];
+  }
+  /**
+   * obtener los grupo plan que se abonaron
+   * @return array lista de grupo plan [cod_clasificacion]
+   */
+  public function getTendenciaGrupoPlan()
+  {
+    $sqlTendenciaGrupoPlan="SELECT distinct cod_clasificacion as grupo_plan
+                              from billing.cf_cod_layout ll
+                             where exists (select *
+                                      from billing.BL_ABONO bb
+                                     where bb.grupo_plan = ll.cod_clasificacion)
+                               AND ll.cod_clasificacion NOT IN ('GPPPSR', 'GPPPSR4G')";
+    return $this->app['db']->fetchAll($sqlTendenciaGrupoPlan);
+  }
+  /**
+   * obtener las tendencias de los servicios
+   * @param  string $periodo cod_periodo
+   * @return number          cantidad de abonos por servicio en el periodo
+   */
+  public function getTendenciaAbonoServicios($periodo)
+  {
+    $sqlTendenciaAbonoServicios="SELECT COUNT(unique name) cantidad
+                                   FROM billing.BL_ABONO_SERVICIO
+                                  WHERE cod_periodo = '$periodo'
+                                    AND estado_ser != 'ERR'";
+    $data = $this->app['db']->fetchAll($sqlTendenciaAbonoServicios);
+    return $data[0]['CANTIDAD'];
+  }
+  /**
+   * obtener la tendencia de SR
+   * @param  string $grupoPlan grupo_plan
+   * @param  string $periodo   periodo
+   * @return number            cantidad por grupo plab SR y periodo
+   */
+  public function getTendenciaAbonoSR($periodo,$grupoPlan)
+  {
+    $sqlTendenciaAbonoSR="SELECT COUNT(unique name) cantidad
+                            FROM prvbill.BL_ABONO@odbprvbill
+                           WHERE cod_periodo ='$periodo'
+                             AND grupo_plan = '$grupoPlan'
+                             AND cod_servicio !='COMBO_4G'
+                             AND estado_abono != 'ERR'";
+    $data = $this->app['db']->fetchAll($sqlTendenciaAbonoSR);
+    return $data[0]['CANTIDAD'];
+  }
+  /**
+   * monitoreo del proceso mora_nof
+   * @return array data obtenida
+   */
+  public function infoMora_nof($periodo)
+  {
+    $sqlinfoMora_nof="SELECT * from table(itjduran.pck_facturacion.info_mora_nof('$periodo'))";
+    return $this->app['db']->fetchAll($sqlinfoMora_nof);
+  }
+  /**
+   * procesos de mora_nof ejecutados en el periodo
+   * @param  string $periodo cod_periodo
+   * @return array          data
+   */
+  public function procMora_nof($periodo)
+  {
+    $sqlProcMora_nof="SELECT substr(proceso,24) proceso,
+                             inicio,
+                             fin,
+                             itjduran.format_time((nvl(fin, sysdate)-inicio) * 24) demora
+                        from itjduran.log_proc_time
+                       where lower(proceso) like ('%co_cmb_estado_col_bulk%')
+                         and to_char(created_at, 'yyyymm') = '$periodo'
+                       order by id";
+    return $this->app['db']->fetchAll($sqlProcMora_nof);
+  }
+  /**
+   * monitoreo de abonos
+   * @param  string $periodo cod_periodo
+   * @return array          data
+   */
+  public function infoAbonos($periodo)
+  {
+    $sqlInfoAbonos="SELECT cola,total,pen,ok,error from table(itjduran.pck_facturacion.info_abonos('$periodo'))";
+    return $this->app['db']->fetchAll($sqlInfoAbonos);
+  }
+
+  public function procAbonos($periodo)
+  {
+    $sqlProcAbonos="SELECT proceso,
+                           inicio,
+                           fin,
+                           itjduran.format_time((nvl(fin, sysdate)-inicio) * 24) demora
+                      from itjduran.log_proc_time
+                     where lower(proceso) like ('%abono%')
+                       and to_char(created_at, 'yyyymm') = '$periodo'
+                     order by id";
+    return $this->app['db']->fetchAll($sqlProcAbonos);
   }
 }

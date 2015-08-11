@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}Facturacion Periodo{% endblock %}
+
+{% block content %}
+  <div id="content">
+    <div class="counter_blue" align="center">
+      FACTURACION PERIODO {{ periodo }}
+    </div><br>
+    <table id="data">
+      <tr>
+        <th>PROCESO</th>
+        <th>INICIO</th>
+        <th>FIN</th>
+        <th>DEMORA</th>
+      </tr>
+      {% for data in dataLog %}
+      <tr>
+        <td align="right">{{ data.PROCESO }}</td>
+        <td>{{ data.INICIO }}</td>
+        <td>{{ data.FIN }}</td>
+        <td>{{ data.DEMORA }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

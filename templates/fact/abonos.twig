@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}ABONOS{% endblock %}
+
+{% block content %}
+  <div id="content">
+    <div class="counter_blue" align="center">
+      ABONOS {{ periodo|e }}
+    </div>
+    <table width='100%'>
+      <tr  valign="top">
+        <td width='40%'>
+          {% if gridMonAbono is null %}
+            <div class="counter_red" align="center">
+              No se tiene data de monitoreo para el periodo.
+            </div>
+          {% else %}
+            {{ component_render(gridMonAbono) }}
+          {% endif %}
+        </td>
+        <td>
+          {% if gridprocAbono is null %}
+            <div class="counter_red" align="center">
+              No se tiene data de procesos para el periodo.
+            </div>
+          {% else %}
+            {{ component_render(gridprocAbono) }}
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+{% endblock %}

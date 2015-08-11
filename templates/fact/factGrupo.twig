@@ -57,8 +57,8 @@
       <form method="POST">
         <label for="">Periodo:</label>
         <select class="sel" name="periodo">
-          {% for i in "now"|date("Ym")-1.."now"|date("Ym")-6 %}
-            <option value="{{ i }}">{{ i }}</option>
+          {% for per in periodos %}
+            <option value="{{ per }}">{{ per }}</option>
           {% endfor %}
         </select>
         <label for="">Grupo:</label>

@@ -33,6 +33,8 @@ class Seguridad
   public function __construct($app)
   {
     $this->app= $app;
+    $usr=$this->app['session']->get('user');
+    $this->usuario=$usr['username'];
   }
   /**
    * Obtener rol correspondiente al usuario
@@ -99,15 +101,35 @@ class Seguridad
    *
    * @return array data con el menu a mostrar
    */
-  public function getMenuRol($rol)
+  public function getRolMenu($rol)
   {
-    if ($rol==1) {
-      $sqlMenuRol="SELECT nombre menu, ruta
-                     FROM itjduran.bill_menu
-                    ORDER BY estado,id";
+    if ($rol==0) {
+      $sqlMenuRol="SELECT r.descripcion rol,
+                          m.nombre menu,
+                          m.ruta,
+                          rm.estado,
+                          rm.created_at creacion,
+                          rm.created_by creado_por,
+                          rm.updated_by actualizacion,
+                          rm.updated_by actualizado_por
+                     FROM itjduran.bill_rol_menu rm,
+                          itjduran.bill_menu m,
+                          itjduran.bill_rol r
+                    where rm.id_rol = r.id
+                      and rm.id_menu = m.id
+                      and r.estado = 'A'
+                      and m.estado = 'A'
+                      and rm.estado = 'A'
+                    order by rm.id_rol, rm.id_menu";
     } else {
-      $sqlMenuRol="SELECT m.nombre menu,
-                          m.ruta
+      $sqlMenuRol="SELECT r.descripcion rol,
+                          m.nombre menu,
+                          m.ruta,
+                          rm.estado,
+                          rm.created_at creacion,
+                          rm.created_by creado_por,
+                          rm.updated_by actualizacion,
+                          rm.updated_by actualizado_por
                      FROM itjduran.bill_rol_menu rm,
                           itjduran.bill_menu m,
                           itjduran.bill_rol r
@@ -117,7 +139,7 @@ class Seguridad
                       and m.estado = 'A'
                       and rm.estado = 'A'
                       and rm.id_rol = $rol
-                    order by rm.estado, rm.id_rol, rm.id_menu";
+                    order by rm.id_rol, rm.id_menu";
     }
 
 
@@ -146,5 +168,54 @@ class Seguridad
                     from itjduran.bill_usuario u
                    order by rol, id_usuario";
     return $this->app['db']->fetchAll($sqlUsuarios);
+  }
+  /**
+   * Alta de un usuario
+   * @param string $idUsuario usuario AD
+   * @param string $email     email del usuario
+   * @param number $telf      celular del usuario
+   * @param string $ip        ip del pc del usuario
+   * @param number $rol       rol que se asignara al usuario
+   */
+  public function setUsuario($idUsuario,$email,$telf,$ip,$rol)
+  {
+    $smtSetUsuario="BEGIN itjduran.pck_interfaz.set_usuario('$idUsuario','$email','$telf','$ip',$rol,'$this->usuario',?); END;";
+    $spSetUsuario=$this->app['db']->prepare($smtSetUsuario);
+    $spSetUsuario->bindParam(1, $respSetUsuario, \PDO::PARAM_STR, 4000);
+    $spSetUsuario->execute();
+    return $respSetUsuario;
+  }
+  /**
+   * Alta de un nuevo rol
+   * @param string $rol descripcion del rol
+   */
+  public function setRol($rol)
+  {
+    $smtSetRol="BEGIN itjduran.pck_interfaz.set_rol('$rol','$this->usuario',?); END;";
+    $spSetRol=$this->app['db']->prepare($smtSetRol);
+    $spSetRol->bindParam(1, $respSetRol, \PDO::PARAM_STR, 4000);
+    $spSetRol->execute();
+    return $respSetRol;
+  }
+  /**
+   * alta de un menu
+   * @param string $nombre Nombre del menu
+   * @param string $ruta   Ruta del menu
+   */
+  public function setMenu($nombre,$ruta)
+  {
+    $smtSetMenu="BEGIN itjduran.pck_interfaz.set_menu('$nombre','$ruta','$this->usuario',?); END;";
+    $spSetMenu=$this->app['db']->prepare($smtSetMenu);
+    $spSetMenu->bindParam(1, $respSetMenu, \PDO::PARAM_STR, 4000);
+    $spSetMenu->execute();
+    return $respSetMenu;
+  }
+  public function setRolMenu($rol,$menu)
+  {
+    $smtSetRolMenu="BEGIN itjduran.pck_interfaz.set_rol_menu('$rol','$menu','$this->usuario',?); END;";
+    $spSetRolMenu=$this->app['db']->prepare($smtSetRolMenu);
+    $spSetRolMenu->bindParam(1, $respSetRolMenu, \PDO::PARAM_STR, 4000);
+    $spSetRolMenu->execute();
+    return $respSetRolMenu;
   }
 }

@@ -10,19 +10,23 @@
     <link rel="stylesheet" href="{{ app.request.basepath }}/theme/layout.css">
     {% include 'smartwigAssets.html' %}
     {% endblock %}
+    {% block refresh %}{% endblock %}
   </head>
   <body>
+    {% block navbar %}
     <div id="navbar">
-      {% block navbar %}
-        {% embed "navbar.twig" %}{% endembed %}
-      {% endblock %}
+      {% embed "navbar.twig" %}{% endembed %}
     </div>
+    {% endblock %}
+    {% block sideleft %}
     <div id="sideLeft">
       {% if app.session.get('user').username is defined %}
         {% embed "menu.twig" with {'rol':app.session.get('user').userrol} %}
         {% endembed %}
       {% endif %}
     </div>
+    {% endblock %}
+    {% block main %}
     <div id="wrapper">
       <div id="middle">
         {% block error %}
@@ -31,8 +35,8 @@
           {% endfor %}
         {% endblock %}
         {% block content %}{% endblock %}
-
       </div>
     </div>
+    {% endblock %}
   </body>
 </html>

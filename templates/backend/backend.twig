@@ -4,6 +4,13 @@
 
 {% block content %}
   <div id="content">
-    {{ component_render(grid) }}
+    {% if grid is null %}
+      <div class="counter_red" align="center">
+        No se tiene registros para el dia.
+      </div>
+    {% else %}
+      {{ component_render(grid) }}
+    {% endif %}
+
   </div>
 {% endblock %}

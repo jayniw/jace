@@ -1,0 +1,69 @@
+{% set h6,h6_12,h12_24,h24_48,h48_72,h72_168,h168,total = 0,0,0,0,0,0,0,0 %}
+
+<table id="mon">
+  <tr>
+    <th>GRUPO</th>
+    <th width="50">< 6</th>
+    <th width="50">6-12</th>
+    <th width="50">12-24</th>
+    <th width="50">24-48</th>
+    <th width="50">48-72</th>
+    <th width="50">72-168</th>
+    <th width="50">>168</th>
+    <th width="50">TOTAL</th>
+  </tr>
+  {% for resumen in dataIncidentes %}
+  <tr align="center">
+    <td align="right">{{ resumen.GRUPO|e }}</td>
+    <td>
+      {% if resumen.H6 > 0 %}
+        {{ resumen.H6|e }} {% set h6 = h6 + resumen.H6 %}
+      {% endif %}
+    </td>
+    <td>
+      {% if resumen.H6_12 > 0 %}
+        {{ resumen.H6_12|e }} {% set h6_12 = h6_12 + resumen.H6_12 %}
+      {% endif %}
+    </td>
+    <td>
+      {% if resumen.H12_24 > 0 %}
+        {{ resumen.H12_24|e }} {% set h12_24 = h12_24 + resumen.H12_24 %}
+      {% endif %}
+    </td>
+    <td>
+      {% if resumen.H24_48 > 0 %}
+        <a class='counter_red'>{{ resumen.H24_48|e }} {% set h24_48 = h24_48 + resumen.H24_48 %}</a>
+      {% endif %}
+    </td>
+    <td>
+      {% if resumen.H48_72 > 0 %}
+        <a class='counter_red'>{{ resumen.H48_72|e }} {% set h48_72 = h48_72 + resumen.H48_72 %}</a>
+      {% endif %}
+    </td>
+    <td>
+      {% if resumen.H72_168 > 0 %}
+        <a class='counter_red'>{{ resumen.H72_168|e }} {% set h72_168 = h72_168 + resumen.H72_168 %}</a>
+      {% endif %}
+    </td>
+    <td>
+      {% if resumen.H168 > 0 %}
+        <a class='counter_red'>{{ resumen.H168|e }} {% set h168 = h168 + resumen.H168 %}</a>
+      {% endif %}
+    </td>
+    <td>{{ resumen.TOTAL|e }} {% set total = total + resumen.TOTAL %}</td>
+  </tr>
+  {% endfor %}
+  <tfoot>
+  <tr align="center">
+    <td align="right">TOTAL</td>
+    <td>{{ h6 }}</td>
+    <td>{{ h6_12 }}</td>
+    <td>{{ h12_24 }}</td>
+    <td>{{ h24_48 }}</td>
+    <td>{{ h48_72 }}</td>
+    <td>{{ h72_168 }}</td>
+    <td>{{ h168 }}</td>
+    <td>{{ total }}</td>
+  </tr>
+  </tfoot>
+</table>

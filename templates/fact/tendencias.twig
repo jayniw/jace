@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}Tendencias{% endblock %}
+
+{% block content %}
+  <div id="content">
+    <div class="counter_blue" align="center">
+      TENDENCIAS PERIODO {{ periodo }}
+    </div><br>
+    {{ component_render(gridDataGP) }}<br>
+    {{ component_render(gridDataServ) }}<br>
+    {{ component_render(gridDataSR) }}
+  </div>
+{% endblock %}

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}USUARIOS{% endblock %}
+{% block title %}ROL - MENU{% endblock %}
 
 {% block content %}
   <div id="content">
@@ -9,18 +9,18 @@
     {% endif %}
     {# formulario para registro de usuario #}
     <form method="POST">
-      <label for="">Id Usuario:</label>
-      <input type="text" class="sel" name="new_usuario" size="15" required>
-      <label for="">Email:</label>
-      <input type="text" class="sel" name="new_email" size="35" required>
-      <label for="">Telefono:</label>
-      <input type="text" class="sel" name="new_telf" size="8">
-      <label for="">IP:</label>
-      <input type="text" class="sel" name="new_ip" size="15">
       <label for="">Rol:</label>
       <select name="new_rol" class="sel">
         {% for rol in roles %}
           <option value="{{ rol.ID }}">{{ rol.DESCRIPCION }}</option>
+        {% else %}
+          <option value="">Sin Opciones</option>
+        {% endfor %}
+      </select>
+      <label for="">Menu:</label>
+      <select name="new_menu" class="sel">
+        {% for menu in menus %}
+          <option value="{{ menu.ID }}">{{ menu.NOMBRE }}</option>
         {% else %}
           <option value="">Sin Opciones</option>
         {% endfor %}

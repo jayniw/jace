@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}MONITOR{% endblock %}
+{% block refresh %}
+  <META HTTP-EQUIV="REFRESH" CONTENT="300">
+{% endblock %}
+{% block navbar %}{% endblock %}
+{% block sideleft %}{% endblock %}
+{% block main %}
+<div id="monitor">
+  <table width="100%" cellspacing="5" align="center">
+    <tr valign="top">
+      <td width="45%" id="incidentesId">
+        {% embed 'monitor/incidentes.twig'
+            with { 'dataIncPend' : dataIncPend,
+                   'dataIncPendRes' : dataIncPendRes } %}
+        {% endembed %}
+      </td>
+      <td>
+        <div class="btn" align="center">PROBLEMAS FACTURACION</div>
+        <table id="mon">
+          <tr>
+            <th>GRUPO</th>
+            <th>CREACION</th>
+            <th>PROB</th>
+            <th>ASIGNADO A</th>
+            <th>SLA</th>
+            <th>DEMORA</th>
+            <th>TITULO</th>
+            <th>ESTADO</th>
+          </tr>
+          {% for prob in dataProbBill %}
+          <tr>
+            <td>{{ prob.GRUPO|e }}</td>
+            <td>{{ prob.CREACION|e }}</td>
+            <td>{{ prob.CODIGO|e }}</td>
+            <td>{{ prob.ASIGNADO_A|e }}</td>
+            <td>{{ prob.SLA|e }}</td>
+            <td>{{ prob.DEMORA_DIAS|e }}</td>
+            <td>{{ prob.TITULO|e }}</td>
+            <td>{{ prob.ESTADO|e }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+{% endblock %}

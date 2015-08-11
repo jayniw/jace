@@ -4,6 +4,20 @@
 
 {% block content %}
   <div id="content">
+    {% if resp != null %}
+      <div class="counter_red" align="center">{{ resp }}</div>
+    {% endif %}
+    {# formulario para registro de usuario #}
+    <form method="POST">
+      <label for="">Nombre:</label>
+      <input type="text" class="sel" name="new_nombre" size="25" required>
+      <label for="">Ruta:</label>
+      <input type="text" class="sel" name="new_ruta" size="25" required>
+      <button type="submit" name="new_crear" value="Crear" class="btncito">
+        Registrar
+      </button>
+    </form>
+    <br>
     {{ component_render(grid) }}
   </div>
 {% endblock %}

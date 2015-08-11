@@ -1,0 +1,47 @@
+<div class="btn" align="center">{{ dataTrello.name }}</div>
+{% for listas in dataTrello.lists %}
+  <div class="btn_menu_gray" align="center">{{ listas.name }}</div>
+  <table id="cant" width="95%">
+  <tr>
+    <th>NOMBRE</th>
+    <th>MIEMBROS</th>
+    <th>%</th>
+    <th>ULTIMO ACCESO</th>
+    <th>DEAD LINE</th>
+  </tr>
+  {% for tarjetas in dataTrello.cards %}
+    {% if listas.id == tarjetas.idList %}
+      {% set items = tarjetas.badges %}
+
+      {% set porcentaje = 100 %}
+      <tr>
+        <td>{{ tarjetas.name|e }}</td>
+        <td>
+          {% for miembros in tarjetas.idMembers %}
+            {% for esp in dataTrello.members %}
+              {% if esp.id == miembros %}
+                [{{ esp.initials|e }}]
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </td>
+        <td>
+          {% if items.checkItems > 0 %}
+            {% set por = items.checkItemsChecked / items.checkItems * 100 %}
+             {{ por|round (1) }}
+           {% endif %}
+        </td>
+        <td>{{ tarjetas.dateLastActivity|slice(0,10) }}</td>
+        <td>{{ tarjetas.due|slice(0,10) }}</td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+  </table>
+{% endfor %}
+{# <pre>{{ dump(dataTrello) }}</pre> #}
+
+<!--img src="https://trello.com/b/7UVwPWSi.png" /-->
+<!--iframe src="https://trello.com/b/7UVwPWSi.html"
+        frameborder="0"
+        width="100%"
+        height="400"></iframe-->

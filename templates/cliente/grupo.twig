@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}GRUPO{% endblock %}
+
+{% block content %}
+  <div id="content">
+    <form action="{{ path('grupo') }}" method="POST">
+    <div class="counter_blue" align="center">
+      ID GRUPO:
+      <input type="text"
+             name="grupo"
+             value="{% if idGrupo is defined %}{{ idGrupo }}{% endif %}"
+             class="sel"
+             size="10">
+      <button type="submit" value="Buscar" class="btncito">Buscar</button>
+    </div>
+    </form></br>
+    {% if idGrupo is defined %}
+      {# grupo #}
+      {% if grupo is null %}
+        <div class="counter_red" align="center">No se tiene data para el GRUPO.</div>
+      {% else %}
+        {{ component_render(grupo) }}
+      {% endif %}
+      {# grupo hist #}</br>
+      {% if grupoHist is null %}
+        <div class="counter_red" align="center">No se tiene data para la GRUPO HISTORICO.</div>
+      {% else %}
+        {{ component_render(grupoHist) }}
+      {% endif %}
+      {# grupo hist #}</br>
+      {% if sdGrupo is null %}
+        <div class="counter_red" align="center">No se tiene data para la SD GRUPO.</div>
+      {% else %}
+        {{ component_render(sdGrupo) }}
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock %}

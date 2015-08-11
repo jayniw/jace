@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}CAMBIO ESTADO MORA_NOF{% endblock %}
+
+{% block content %}
+  <div id="content">
+    <div class="counter_blue" align="center">
+      CAMBIO DE ESTADO MORA_NOF {{ periodo|e }}
+    </div>
+    <table width='100%'>
+      <tr  valign="top">
+        <td width='50%'>
+          {% if gridInfoMora_nof is null %}
+            <div class="counter_red" align="center">
+              No se tiene data de monitoreo para el periodo.
+            </div>
+          {% else %}
+            {{ component_render(gridInfoMora_nof) }}
+          {% endif %}
+        </td>
+        <td>
+          {% if gridProcMora_nof is null %}
+            <div class="counter_red" align="center">
+              No se tiene data de procesos para el periodo.
+            </div>
+          {% else %}
+            {{ component_render(gridProcMora_nof) }}
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}UNIDAD{% endblock %}
+
+{% block content %}
+  <div id="content">
+    <form action="{{ path('unidad') }}" method="POST">
+    <div class="counter_blue" align="center">
+      ID UNIDAD:
+      <input type="text"
+             name="unidad"
+             value="{% if idUnidad is defined %}{{ idUnidad }}{% endif %}"
+             class="sel"
+             size="10">
+      <button type="submit" value="Buscar" class="btncito">Buscar</button>
+    </div>
+    </form>
+    {% if idUnidad is defined %}
+      {# UNIDAD #}<br>
+      {% if unidad is null %}
+        <div class="counter_red" align="center">No se tiene data para la UNIDAD.</div>
+      {% else %}
+        {{ component_render(unidad) }}
+      {% endif %}
+      {# HISTORICO #}<br>
+      {% if unidadHist is null %}
+        <div class="counter_red" align="center">No se tiene data para la UNIDAD HISTORICO.</div>
+      {% else %}
+        {{ component_render(unidadHist) }}
+      {% endif %}
+      {# HISTORICO ESTADO #}<br>
+      {% if unidadEstadosHist is null %}
+        <div class="counter_red" align="center">No se tiene data para la UNIDAD ESTADO HISTORICO.</div>
+      {% else %}
+        {{ component_render(unidadEstadosHist) }}
+      {% endif %}
+      {# HISTORICO PLANES #}<br>
+      {% if unidadLayout is null %}
+        <div class="counter_red" align="center">No se tiene data para la UNIDAD HISTORICO LAYOUT.</div>
+      {% else %}
+        {{ component_render(unidadLayout) }}
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock %}
