@@ -163,6 +163,9 @@ class Cliente
   {
     $sqlGrupo="SELECT g.id_cliente,
                       g.id_persona,
+                      (select df.id_cobranza
+                         from billing.cl_datos_facturacion df
+                        where df.id_grupo=g.id_grupo) id_cobranza,
                       g.estado,
                       g.estado_collections col,
                       g.cod_ciudad,

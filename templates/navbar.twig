@@ -5,6 +5,28 @@
     <td>
       {% if app.session.get('user').userrol is defined and
             app.session.get('user').userrol == 1 %}
+        {# menu #}
+        {% ui_button id="menuUsuarios"  label="USUARIOS" %}
+        {% ui_menu trigger="#menuUsuarios"
+             orientation="vertical"
+             position={'my':"right top",'at':"left top"}
+             triggerEvent="mouseenter" %}
+          {% set Ousuarios = app.url_generator.generate('usuarios') %}
+          {% menu_item label="Usuarios" onclick="location.href=algo" %}
+          {% menu_item label="Roles" %}
+          {% menu_item label="Menu" %}
+          {% menu_item label="Rol-Menu" %}
+        {% end_ui_menu %}
+
+        {% ui_button id="menuBitacora"  label="BITACORA" %}
+        {% ui_menu trigger="#menuBitacora"
+             orientation="vertical"
+             position={'my':"right top",'at':"left top"}
+             triggerEvent="mouseenter" %}
+          {% menu_item label="Tareas" %}
+
+        {% end_ui_menu %}
+
         <a href="{{ app.url_generator.generate('usuarios') }}"
              class="btncito">USUARIOS</a>
         <a href="{{ app.url_generator.generate('roles') }}"

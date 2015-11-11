@@ -73,17 +73,7 @@ class Facturacion
    */
   public function getResumenProcess($periodo)
   {
-    $sqlResumenProcess="SELECT Estado,
-                               Count(*) Cant,
-                               Round((Count(*) * 100) /
-                                     (SELECT COUNT(*)
-                                        FROM billing.bl_imagen_grupo
-                                       where cod_periodo = '$periodo'),
-                                     2) Por
-                          From billing.Bl_Imagen_Grupo g
-                         Where Cod_Periodo = '$periodo'
-                         Group By Estado
-                         Order By 2 asc";
+    $sqlResumenProcess="SELECT cola,total,pen,ok,error from table(itjduran.pck_facturacion.info_resumen('$periodo'))";
     return $this->app['db']->fetchAll($sqlResumenProcess);
   }
   /**
@@ -115,12 +105,16 @@ class Facturacion
    *
    * @return array resultado de la consulta
    */
-  public function getResumenProcessDem()
+  public function getResumenProcessDem($periodo)
   {
-    $sqlResumenProcessDem="SELECT max( round(((sysdate-THIS_DATE)*60*24),2))dem,
-                                 to_char(sysdate,'dd.mm.yyyy hh24:mi:ss') ahora
-                            from user_jobs
-                           where lower(what) like '%generar_resumen%'";
+    $sqlResumenProcessDem="SELECT proceso,
+                                 inicio,
+                                 fin,
+                                 itjduran.format_time((nvl(fin, sysdate)-inicio) * 24) demora
+                            from itjduran.log_proc_time
+                           where lower(proceso) like ('%resumen%')
+                             and to_char(created_at, 'yyyymm') = '$periodo'
+                           order by id desc";
     return $this->app['db']->fetchAll($sqlResumenProcessDem);
   }
   /**
@@ -492,5 +486,40 @@ class Facturacion
                        and to_char(created_at, 'yyyymm') = '$periodo'
                      order by id";
     return $this->app['db']->fetchAll($sqlProcAbonos);
+  }
+  /**
+   * obtener las tareas que no se hayan concluido
+   * @return array data con las tareas no conlcuidas.
+   */
+  public function getTareasBitacora()
+  {
+    $sqlGetTareasBitacora="SELECT bb.id,
+                                  tt.nombre,
+                                  bb.responsable,
+                                  tt.hora_fin,
+                                  tt.dia_ejecucion,
+                                  bb.fecha_inicio,
+                                  bb.fecha_fin
+                             from billing.bit_bitacora bb, billing.bit_tareas tt
+                            where nvl(bb.fecha_fin, sysdate) between
+                                  last_day(sysdate- 5) and
+                                  to_date('05-' || to_char(sysdate+1, 'mm-yyyy'),
+                                          'DD-MM-YYYY HH24:MI:SS')
+                               and bb.id_tarea = tt.id
+                            order by bb.secuencia asc";
+    return $this->app['db']->fetchAll($sqlGetTareasBitacora);
+  }
+  /**
+   * registrar la fecha inicio/fin de la tarea en bitacora
+   * @param number $id id de la bitacora
+   * @return string respuesta del procedimiento almacenado.
+   */
+  public function setTareaBitacora($id,$usr,$ip)
+  {
+    $smtSetTareaBitacora="BEGIN billing.bit_pck_bitacora.registra_bitacora($id, '$usr', '$ip', ? ); END;";
+    $spSetTareaBitacora=$this->app['db']->prepare($smtSetTareaBitacora);
+    $spSetTareaBitacora->bindParam(1, $respSetTareaBitacora, \PDO::PARAM_STR, 4000);
+    $spSetTareaBitacora->execute();
+    return $respSetTareaBitacora;
   }
 }

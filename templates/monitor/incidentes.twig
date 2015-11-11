@@ -72,13 +72,11 @@
 <table id="mon">
   <tr>
     <th>SLA</th>
-    <th>T</th>
     <th>ESP</th>
     <th>INC</th>
     <th>TITULO</th>
     <th>CREACION</th>
     <th>VENCIMIENTO</th>
-    <th>DEMORA</th>
     <th>ESTADO</th>
   </tr>
   {% for incidentes in dataIncPend %}
@@ -87,15 +85,18 @@
     {% else %}
       {% set class='' %}
     {% endif %}
+    {% if incidentes.ESP == 'SIN ASIGNAR' %}
+      {% set class_esp='counter_red' %}
+    {% else %}
+      {% set class_esp='' %}
+    {% endif %}
   <tr>
     <td>{{ incidentes.SLA|e }}</td>
-    <td>{{ incidentes.TIPO|e }}</td>
-    <td>{{ incidentes.ESP|e }}</td>
+    <td><a class="{{ class_esp }}">{{ incidentes.ESP|e }}</a></td>
     <td>{{ incidentes.CODIGO|e }}</td>
     <td>{{ incidentes.TITULO|e }}</td>
     <td>{{ incidentes.CREACION|e }}</td>
     <td>{{ incidentes.VENCIMIENTO|e }}</td>
-    <td>{{ incidentes.DEM|e }}</td>
     <td><a class="{{ class }}">{{ incidentes.ESTADO|e }}</a></td>
   </tr>
   {% endfor %}

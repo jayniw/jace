@@ -141,21 +141,26 @@ $fact->match(
   '/resumen',
   function (Request $request) use ($app) {
     set_time_limit(0);
-    $periodo=$app['periodo'];
     $fact=new Facturacion\Facturacion($app);
     $jq=new jqTools\JqTools();
-    $dataResumen=$fact->getResumenProcess($periodo);
-    $dataResumenDem=$fact->getResumenProcessDem();
-    $gridResumen=$jq->tablaFiltro(
-      $dataResumen,
-      '['.$dataResumenDem[0]['AHORA'].
-      ']Porcentaje generado del resumen. Demora de '.
-      $dataResumenDem[0]['DEM'].' minutos.',
-      'tmpResumenId'
-    );
-    //for para obtener los datos por estado
-    //creacion de array poara almacenar los grids a mostrar en template
-    return $app['twig']->render('resumen.twig', array('grid' => $gridResumen));
+    $dataResumen=$fact->getResumenProcess($app['antPeriodo']);
+    $gridMonResumen=(count($dataResumen)>0 )
+                   ? $jq->tabla($dataResumen,
+                                'MONITOREO',
+                                'monResumenId')
+                   : null ;
+    $dataProcResumen=$fact->getResumenProcessDem($app['periodo']);
+    $gridProcResumen = (count($dataProcResumen))
+                      ? $jq->tabla($dataProcResumen,
+                                   'PROCESOS',
+                                   'procResumenId')
+                      : null ;
+    return $app['twig']->render(
+            'fact/resumen.twig',
+            array('periodo'=>$app['antPeriodo'],
+                  'gridMonResumen' => $gridMonResumen,
+                  'gridProcResumen' => $gridProcResumen)
+            );
   }
 )->bind('resumen');
 

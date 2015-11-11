@@ -1,0 +1,25 @@
+<div class="btn" align="center">{{ titulo }}</div>
+<table id="mon">
+  <tr>
+    <th>GRUPO</th>
+    <th>CREACION</th>
+    <th>PROB</th>
+    <th>ASIGNADO A</th>
+    <th>SLA</th>
+    <th>DEMORA</th>
+    <th>TITULO</th>
+    <th>ESTADO</th>
+  </tr>
+  {% for prob in dataProbBill %}
+  <tr>
+    <td>{{ prob.GRUPO|e }}</td>
+    <td>{{ prob.CREACION|e }}</td>
+    <td>{{ prob.CODIGO|e }}</td>
+    <td>{{ prob.ASIGNADO_A|e }}</td>
+    <td>{{ prob.SLA|e }}</td>
+    <td>{{ prob.DEMORA_DIAS|e }}</td>
+    <td>{{ prob.TITULO|e }}</td>
+    <td>{{ prob.ESTADO|e }}</td>
+  </tr>
+  {% endfor %}
+</table>

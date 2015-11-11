@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}BITACORA{% endblock %}
+
+{% block content %}
+  <div id="content">
+    {% if msj is not null  %}
+    <div class="counter_red" align="center">
+      {{ msj }}
+    </div>
+    {% endif %}
+    <form method="POST">
+    <table id="mon">
+       <tr>
+         <th>NOMBRE</th>
+         <th>RESPONSABLE</th>
+         <th>HORA FIN</th>
+         <th>DIA</th>
+         <th>FECHA INICIO</th>
+         <th>FECHA FIN</th>
+         <th>ACCION</th>
+       </tr>
+       {% for item in tareas %}
+       <tr>
+         <td>{{ item.NOMBRE }}</td>
+         <td>{{ item.RESPONSABLE }}</td>
+         <td>{{ item.HORA_FIN }}</td>
+         <td>{{ item.DIA_EJECUCION }}</td>
+         <td>{{ item.FECHA_INICIO }}</td>
+         <td>{{ item.FECHA_FIN }}</td>
+         <td>
+          {% if item.FECHA_FIN is null %}
+          <button type="submit" name="regBit" value="{{ item.ID }}" class="btncito">REGISTRAR</button>
+          {% endif %}
+         </td>
+       </tr>
+       {% endfor %}
+    </table>
+    </form>
+
+  </div>
+{% endblock %}

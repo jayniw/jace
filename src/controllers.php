@@ -49,7 +49,9 @@ $app->match(
         $rol=$sec->getRol($login['_username']);
         $app['session']->set(
           'user',
-          array('username'=>$login['_username'], 'userrol'=>$rol)
+          array('username'=>$login['_username'],
+                'userrol'=>$rol,
+                'ip'=>$app['request']->server->get("REMOTE_ADDR"))
         );
         $menuRol=$sec->getRolMenu($rol);
         $app['session']->set('menu', array());
@@ -86,6 +88,30 @@ $before=function (Request $request) use ($app) {
 };
 
 $app->match(
+  '/bitacora',
+  function (Request $request) use ($app) {
+    $usuarioSession=$app['session']->get('user');
+    $usuario=$usuarioSession['username'];
+    $ip=$usuarioSession['ip'];
+    $bit=new Facturacion\Facturacion($app);
+    if ($request->get('regBit')) {
+      $mensaje=$bit->setTareaBitacora(
+                        $request->get('regBit'),
+                        $usuario,
+                        $ip);
+     } else {
+      $mensaje=null;
+    }
+    $dataTareas=$bit->getTareasBitacora();
+    return $app['twig']->render(
+        'fact/bitacora.twig',array(
+        'tareas' => $dataTareas,
+        'msj' => $mensaje,
+        ));
+  }
+)->bind('bitacora');
+
+$app->match(
   '/monitor',
   function () use ($app) {
     $jq=new jqTools\JqTools();
@@ -94,11 +120,13 @@ $app->match(
     $dataIncPend=$ticket->getIncidentesPenDet();
     $dataIncPendRes=$ticket->getIncPendResumen();
     $dataProbBill=$ticket->getProbPend();
+    $dataProbEsp=$ticket->getProbPend('esp');
 
     return $app['twig']->render('monitor.twig',array(
           'dataIncPendRes'=>$dataIncPendRes,
           'dataProbBill'=>$dataProbBill,
-          'dataIncPend'=> $dataIncPend
+          'dataIncPend'=> $dataIncPend,
+          'dataProbEsp'=>$dataProbEsp,
           ));
   }
 )->bind('monitor');

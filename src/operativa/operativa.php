@@ -33,6 +33,9 @@ class Operativa
   public function __construct($app)
   {
     $this->app= $app;
+    $sqlNlsDateFormat="ALTER SESSION SET NLS_DATE_FORMAT = 'DD.MM.YYYY HH24:MI:SS'";
+    $nlsDateFormat=$this->app['dbs']['itsm']->prepare($sqlNlsDateFormat);
+    $nlsDateFormat->execute();
   }
   /**
    * obtener el reporte de incidentes generado cada dia a las 7.
@@ -110,39 +113,35 @@ class Operativa
       case 'facturacion':
         $where = "and exists (select *
                                 from bil_mon.vw_grupos_billing gb
-                               where gb.NAME=t.grupo)";
+                               where gb.NAME=vv.PAWSVCAUTHGROUPSNAME)";
         break;
       case null:
         $where =null;
         break;
       default:
-        $where="and t.grupo like ('%$mesa%')";
+        $where="and vv.PAWSVCAUTHGROUPSNAME like ('%$mesa%')";
         break;
     }
-    $sqlGetIncidentesPenDet=" SELECT t.sla_horas sla,
-                                     nvl(substr(t.usuario_asignado, 10), 'SIN ASIGNAR') esp,
-                                     t.codigo,
-                                     t.categoria,
-                                     t.titulo,
-                                     to_char(t.fecha_creacion,'dd.mm.yyyy hh24:mi:ss') creacion,
-                                     to_char(fecha_creacion + sla_horas / 24,'dd.mm.yyyy hh24:mi:ss') vencimiento,
-                                     round(sysdate - fecha_creacion, 2) * 24 dem,
-                                     t.grupo,
-                                     case
-                                       when (fecha_creacion + sla_horas / 24) < sysdate then
-                                        'VENCIDO'
-                                       when (fecha_creacion + sla_horas / 24) between sysdate - 1 / 24 and
-                                            sysdate then
-                                        'POR VENCER'
-                                       else
-                                        'A TIEMPO'
-                                     end estado,
-                                     decode(tipo,0,'I',1,'R') tipo
-                                from BIL_MON.VW_ALLINCIDENTS t
-                               where t.estado = 'Asignada a un grupo'
-                                 and t.subestado = 'En atención'
+    $sqlGetIncidentesPenDet="SELECT replace(replace(padslasname, ' horas', ''), 'Interno ', '') sla,
+                                    vv.type || ' '||vv.code codigo,
+                                    nvl(vv.PAWSVCAUTHUSERSRESPONSFULLNAME,
+                                       'SIN ASIGNAR') esp,
+                                    vv.incidenttitle titulo,
+                                    vv.creationdate creacion,
+                                    vv.estimateddate vencimiento,
+                                    case
+                                      when vv.expired <> 0 then
+                                       'VENCIDO'
+                                      when vv.estimateddate between sysdate - 1 / 24 and sysdate then
+                                       'POR VENCER'
+                                      else
+                                       'A TIEMPO'
+                                    end estado
+                               from bil_mon.vw_incidentes vv
+                              where vv.STATUS = 2
+                                and vv.PADSTATUSNAME = 'En atención'
                                  $where
-                               order by t.sla_horas asc, vencimiento asc";
+                               order by vv.creationdate asc";
     return $this->app['dbs']['itsm']->fetchAll($sqlGetIncidentesPenDet);
   }
   /**
@@ -214,6 +213,25 @@ class Operativa
                                 from bil_mon.vw_grupos_billing gb
                                where gb.NAME=pp.pawSvcAuthGroupsName)";
         break;
+      case 'esp':
+        $where = "and (pp.pawSvcAuthUsersInvFullName in
+                       ('Daviu Arevalo, Julio',
+                         'Maldonado, Gustavo',
+                         'Gallinate, Juan',
+                         'Mercado, Georgina',
+                         'Duran, Jalir',
+                         'Velasco, Miguel',
+                         'Torres, Rodrigo') or
+                       pp.pawSvcAuthUsersCloserFullName in
+                       ('Daviu Arevalo, Julio',
+                         'Maldonado, Gustavo',
+                         'Gallinate, Juan',
+                         'Mercado, Georgina',
+                         'Duran, Jalir',
+                         'Velasco, Miguel',
+                         'Torres, Rodrigo'))
+                  and pp.pawSvcAuthGroupsName not like ('%Billing%')";
+        break;
       case null:
         $where =null;
         break;
@@ -244,7 +262,7 @@ class Operativa
                            from panet.viewallproblems pp
                           where status not in (1,5,6)
                                 $where
-                          order by pp.creationDate--pp.pawSvcAuthGroupsName
+                          order by pp.creationDate
                           ";
     return $this->app['dbs']['itsm']->fetchAll($sqlProbPendResumen);
   }
@@ -258,40 +276,62 @@ class Operativa
    */
   public function getCerradosDia($periodo)
   {
-    $sqlCerradosDia=" SELECT a.Usuario As Esp,
-                             a.D01, a.D02, a.D03, a.D04, a.D05, a.D06, a.D07, a.D08,
-                             a.D09, a.D10,
-                             a.D11, a.D12, a.D13, a.D14, a.D15, a.D16, a.D17, a.D18,
-                             a.D19, a.D20,
-                             a.D21, a.D22, a.D23, a.D24, a.D25, a.D26, a.D27, a.D28,
-                             a.D29, a.D30, a.D31,
-                             (a.D01 + a.D02 + a.D03 + a.D04 + a.D05 + a.D06 + a.D07
-                             +a.D08 + a.D09 + a.D10 + a.D11 + a.D12 + a.D13 + a.D14
-                             +a.D15 + a.D16 + a.D17 + a.D18 + a.D19 + a.D20 + a.D21
-                             +a.D22 + a.D23 + a.D24 + a.D25 + a.D26 + a.D27 + a.D28
-                             +a.D29 + a.D30 + a.D31) As Total
-                        From Hpsc_Rep_Closed_Month a
-                       Where a.Fecha = '$periodo'
-                         And Usuario In (".$this->app['esp'].")
-                      UNION
-                      SELECT 'TOTAL',
-                             Sum(D01),Sum(D02),Sum(D03),Sum(D04),Sum(D05),Sum(D06),
-                             Sum(D07),Sum(D08),Sum(D09),Sum(D10),Sum(D11),Sum(D12),
-                             Sum(D13),Sum(D14),Sum(D15),Sum(D16),Sum(D17),Sum(D18),
-                             Sum(D19),Sum(D20),Sum(D21),Sum(D22),Sum(D23),Sum(D24),
-                             Sum(D25),Sum(D26),Sum(D27),Sum(D28),Sum(D29),Sum(D30),
-                             Sum(D31),
-                             (Sum(D01)+Sum(D02)+Sum(D03)+Sum(D04)+Sum(D05)+Sum(D06)
-                             +Sum(D07)+Sum(D08)+Sum(D09)+Sum(D10)+Sum(D11)+Sum(D12)
-                             +Sum(D13)+Sum(D14)+Sum(D15)+Sum(D16)+Sum(D17)+Sum(D18)
-                             +Sum(D19)+Sum(D20)+Sum(D21)+Sum(D22)+Sum(D23)+Sum(D24)
-                             +Sum(D25)+Sum(D26)+Sum(D27)+Sum(D28)+Sum(D29)+Sum(D30)
-                             +Sum(D31)) As Total
-                        From Hpsc_Rep_Closed_Month a
-                       Where Fecha = '$periodo'
-                         And Usuario In (".$this->app['esp'].")
-                       Order By Total";
-    return $this->app['dbs']['scenter']->fetchAll($sqlCerradosDia);
+    $sqlCerradosDia="SELECT especialista,
+                             sum(D01) D01,sum(D02) D02,sum(D03) D03,sum(D04) D04,sum(D05) D05,sum(D06) D06,sum(D07) D07,sum(D08) D08,
+                             sum(D09) D09,sum(D10) D10,sum(D11) D11,sum(D12) D12,sum(D13) D13,sum(D14) D14,sum(D15) D15,sum(D16) D16,
+                             sum(D17) D17,sum(D18) D18,sum(D19) D19,sum(D20) D20,sum(D21) D21,sum(D22) D22,sum(D23) D23,sum(D24) D24,
+                             sum(D25) D25,sum(D26) D26,sum(D27) D27,sum(D28) D28,sum(D29) D29,sum(D30) D30,sum(D31) D31,
+                             sum(D01)+sum(D02)+sum(D03)+sum(D04)+sum(D05)+sum(D06)+sum(D07)+sum(D08)+
+                             sum(D09)+sum(D10)+sum(D11)+sum(D12)+sum(D13)+sum(D14)+sum(D15)+sum(D16)+
+                             sum(D17)+sum(D18)+sum(D19)+sum(D20)+sum(D21)+sum(D22)+sum(D23)+sum(D24)+
+                             sum(D25)+sum(D26)+sum(D27)+sum(D28)+sum(D29)+sum(D30)+sum(D31) total
+                        from (
+                      select responsiblesignaturedate fecha_respondido,
+                             vv.PAWSVCAUTHUSERSRESPSIGFULLNAME especialista,
+                             case to_char(responsiblesignaturedate,'DD') when '01' then 1 else 0 end D01,
+                             case to_char(responsiblesignaturedate,'DD') when '02' then 1 else 0 end D02,
+                             case to_char(responsiblesignaturedate,'DD') when '03' then 1 else 0 end D03,
+                             case to_char(responsiblesignaturedate,'DD') when '04' then 1 else 0 end D04,
+                             case to_char(responsiblesignaturedate,'DD') when '05' then 1 else 0 end D05,
+                             case to_char(responsiblesignaturedate,'DD') when '06' then 1 else 0 end D06,
+                             case to_char(responsiblesignaturedate,'DD') when '07' then 1 else 0 end D07,
+                             case to_char(responsiblesignaturedate,'DD') when '08' then 1 else 0 end D08,
+                             case to_char(responsiblesignaturedate,'DD') when '09' then 1 else 0 end D09,
+                             case to_char(responsiblesignaturedate,'DD') when '10' then 1 else 0 end D10,
+                             case to_char(responsiblesignaturedate,'DD') when '11' then 1 else 0 end D11,
+                             case to_char(responsiblesignaturedate,'DD') when '12' then 1 else 0 end D12,
+                             case to_char(responsiblesignaturedate,'DD') when '13' then 1 else 0 end D13,
+                             case to_char(responsiblesignaturedate,'DD') when '14' then 1 else 0 end D14,
+                             case to_char(responsiblesignaturedate,'DD') when '15' then 1 else 0 end D15,
+                             case to_char(responsiblesignaturedate,'DD') when '16' then 1 else 0 end D16,
+                             case to_char(responsiblesignaturedate,'DD') when '17' then 1 else 0 end D17,
+                             case to_char(responsiblesignaturedate,'DD') when '18' then 1 else 0 end D18,
+                             case to_char(responsiblesignaturedate,'DD') when '19' then 1 else 0 end D19,
+                             case to_char(responsiblesignaturedate,'DD') when '20' then 1 else 0 end D20,
+                             case to_char(responsiblesignaturedate,'DD') when '21' then 1 else 0 end D21,
+                             case to_char(responsiblesignaturedate,'DD') when '22' then 1 else 0 end D22,
+                             case to_char(responsiblesignaturedate,'DD') when '23' then 1 else 0 end D23,
+                             case to_char(responsiblesignaturedate,'DD') when '24' then 1 else 0 end D24,
+                             case to_char(responsiblesignaturedate,'DD') when '25' then 1 else 0 end D25,
+                             case to_char(responsiblesignaturedate,'DD') when '26' then 1 else 0 end D26,
+                             case to_char(responsiblesignaturedate,'DD') when '27' then 1 else 0 end D27,
+                             case to_char(responsiblesignaturedate,'DD') when '28' then 1 else 0 end D28,
+                             case to_char(responsiblesignaturedate,'DD') when '29' then 1 else 0 end D29,
+                             case to_char(responsiblesignaturedate,'DD') when '30' then 1 else 0 end D30,
+                             case to_char(responsiblesignaturedate,'DD') when '31' then 1 else 0 end D31
+                        from bil_mon.vw_incidentes vv
+                       where vv.PAWSVCAUTHUSERSRESPSIGFULLNAME in ('Daviu Arevalo, Julio',
+                                                                   'Duran, Jalir',
+                                                                   'Gallinate, Juan',
+                                                                   'Maldonado, Gustavo',
+                                                                   'Torres, Rodrigo',
+                                                                   'Velasco, Miguel')
+                         and vv.STATUS not in (0,2)
+                         and to_char(vv.responsiblesignaturedate,'YYYYMM')='$periodo'
+                      order by vv.CREATIONDATE asc)
+                      group by especialista
+                      order by especialista asc";
+    return $this->app['dbs']['itsm']->fetchAll($sqlCerradosDia);
   }
 
   public function getTicketsCliInt()

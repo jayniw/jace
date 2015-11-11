@@ -4,12 +4,24 @@
 		"selected_items":
 		[
 			[
-				"dataPro",
-				"$dataProcImagen〔variable〕"
+				"$usuario",
+				"$usuarioSession"
+			],
+			[
+				"set",
+				"setTareaBitacora〔function〕"
 			],
 			[
 				"if",
-				"if?	$… = ( … ) ? … : …"
+				"if.	if (block)"
+			],
+			[
+				"for",
+				"for.	for (block)"
+			],
+			[
+				"dataPro",
+				"$dataProcImagen〔variable〕"
 			],
 			[
 				"dataM",
@@ -18,10 +30,6 @@
 			[
 				"tab",
 				"tablaReclamos〔function〕"
-			],
-			[
-				"for",
-				"for	for …"
 			],
 			[
 				"getT",
@@ -198,10 +206,6 @@
 			[
 				"cod_",
 				"cod_carrier"
-			],
-			[
-				"set",
-				"setb	set (block)"
 			],
 			[
 				"sel",
@@ -476,42 +480,42 @@
 			}
 		},
 		{
-			"file": "templates/cliente/unidad.twig",
+			"file": "templates/fact/bitacora.twig",
 			"settings":
 			{
-				"buffer_size": 1538,
+				"buffer_size": 1049,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "templates/fact/facturar.twig",
+			"file": "templates/monitor/incidentes.twig",
 			"settings":
 			{
-				"buffer_size": 624,
+				"buffer_size": 2741,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "templates/fact/mora_nof.twig",
+			"file": "templates/monitor.twig",
 			"settings":
 			{
-				"buffer_size": 939,
+				"buffer_size": 1022,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "templates/fact/imagen.twig",
+			"file": "templates/monitor/problemas.twig",
 			"settings":
 			{
-				"buffer_size": 895,
+				"buffer_size": 585,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "templates/fact/abonos.twig",
+			"file": "templates/navbar.twig",
 			"settings":
 			{
-				"buffer_size": 891,
+				"buffer_size": 2396,
 				"line_ending": "Windows"
 			}
 		},
@@ -519,7 +523,7 @@
 			"file": "src/controllers.php",
 			"settings":
 			{
-				"buffer_size": 12773,
+				"buffer_size": 13618,
 				"line_ending": "Unix"
 			}
 		},
@@ -527,7 +531,7 @@
 			"file": "src/fact.php",
 			"settings":
 			{
-				"buffer_size": 6775,
+				"buffer_size": 7040,
 				"line_ending": "Windows"
 			}
 		},
@@ -548,18 +552,10 @@
 			}
 		},
 		{
-			"file": "templates/navbar.twig",
-			"settings":
-			{
-				"buffer_size": 1540,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "src/facturacion/facturacion.php",
 			"settings":
 			{
-				"buffer_size": 19625,
+				"buffer_size": 20951,
 				"line_ending": "Unix"
 			}
 		},
@@ -575,15 +571,23 @@
 			"file": "src/cliente/cliente.php",
 			"settings":
 			{
-				"buffer_size": 8383,
+				"buffer_size": 8557,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/seguridad/seguridad.php",
+			"settings":
+			{
+				"buffer_size": 7257,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "src/operativa/operativa.php",
 			"settings":
 			{
-				"buffer_size": 14818,
+				"buffer_size": 18619,
 				"line_ending": "Unix"
 			}
 		}
@@ -727,42 +731,45 @@
 	"expanded_folders":
 	[
 		"/C/httpServer/vhosts/jace",
-		"/C/httpServer/vhosts/jace/config",
-		"/C/httpServer/vhosts/jace/src",
+		"/C/httpServer/vhosts/jace/src/cliente",
 		"/C/httpServer/vhosts/jace/src/facturacion",
+		"/C/httpServer/vhosts/jace/src/monitor",
+		"/C/httpServer/vhosts/jace/src/operativa",
+		"/C/httpServer/vhosts/jace/src/rest",
 		"/C/httpServer/vhosts/jace/src/seguridad",
 		"/C/httpServer/vhosts/jace/templates",
-		"/C/httpServer/vhosts/jace/templates/backend",
-		"/C/httpServer/vhosts/jace/templates/cliente",
-		"/C/httpServer/vhosts/jace/templates/fact",
-		"/C/httpServer/vhosts/jace/templates/monitor",
-		"/C/httpServer/vhosts/jace/templates/operativa"
+		"/C/httpServer/vhosts/jace/templates/monitor"
 	],
 	"file_history":
 	[
+		"/C/httpServer/vhosts/jace/templates/backend/usuarios.twig",
+		"/C/httpServer/vhosts/jace/templates/monitor.twig",
+		"/C/httpServer/vhosts/jace/templates/monitor/incidentes.twig",
+		"/C/httpServer/vhosts/jace/templates/fact/abonos.twig",
+		"/C/httpServer/vhosts/jace/templates/fact/resumen.twig",
+		"/C/httpServer/vhosts/jace/templates/fact/imagen.twig",
+		"/C/httpServer/vhosts/jace/templates/fact/mora_nof.twig",
+		"/C/httpServer/vhosts/jace/templates/fact/facturar.twig",
+		"/C/httpServer/vhosts/jace/templates/cliente/unidad.twig",
+		"/C/httpServer/vhosts/jace/composer.json",
 		"/C/httpServer/vhosts/jace/config/prod.php",
 		"/C/httpServer/vhosts/jace/config/dev.php",
 		"/C/httpServer/vhosts/jace/src/app.php",
 		"/C/httpServer/vhosts/jace/src/seguridad/seguridad.php",
 		"/C/httpServer/vhosts/jace/templates/cliente/grupo.twig",
 		"/C/httpServer/vhosts/jace/templates/operativa/itsm.twig",
-		"/C/httpServer/vhosts/jace/templates/monitor.twig",
 		"/C/httpServer/vhosts/jace/templates/fact/tendencias.twig",
 		"/C/httpServer/vhosts/jace/templates/operativa/tabla_template.twig",
-		"/C/httpServer/vhosts/jace/templates/monitor/incidentes.twig",
 		"/C/httpServer/vhosts/jace/src/monitor/monitor.php",
 		"/C/httpServer/vhosts/jace/web/theme/layout.css",
 		"/C/httpServer/vhosts/jace/templates/fact/factGrupo.twig",
-		"/C/httpServer/vhosts/jace/templates/fact/facturar.twig",
 		"/C/httpServer/vhosts/jace/web/.htaccess",
 		"/C/httpServer/vhosts/jace/templates/operativa/reclamos.twig",
-		"/C/httpServer/vhosts/jace/templates/cliente/unidad.twig",
 		"/C/app/rblanco/product/11.1.0/db_1/NETWORK/ADMIN/TNSNAMES.ora",
 		"/C/httpServer/vhosts/jace/templates/backend/rolMenu.twig",
 		"/C/httpServer/vhosts/jace/templates/menu.twig",
 		"/C/Users/jduran/Google Drive/nuevatel/billing/versionamiento/BIL_MON@ITILBD/pck_itsm.pck",
 		"/C/httpServer/vhosts/jace/templates/backend/roles.twig",
-		"/C/httpServer/vhosts/jace/templates/backend/usuarios.twig",
 		"/C/httpServer/core/apache2/conf/extra/httpd-vhosts.conf",
 		"/C/Program Files (x86)/SmartBear/SoapUI-5.0.0/bin/SoapUI-5.0.0.vmoptions",
 		"/C/Program Files (x86)/PLSQL Developer Beta/SpecialCopy/PLSQL.copy",
@@ -778,7 +785,6 @@
 		"/C/httpServer/vhosts/jace/templates/monitor/board.twig",
 		"/C/Users/jduran/Desktop/xxx/xyy.sql",
 		"/C/Users/jduran/Documents/facturacion/prefact/103297179.csv",
-		"/C/httpServer/vhosts/jace/composer.json",
 		"/C/httpServer/vhosts/jace/src/facturacion/facturacion.php",
 		"/C/httpServer/vhosts/jace/src/cliente/cliente.php",
 		"/C/httpServer/vhosts/jace/templates/fact/refact.twig",
@@ -863,11 +869,7 @@
 		"/C/httpServer/vhosts/jace/templates/reclamos.html",
 		"//10.40.3.214/app/jace/src/controllers.php",
 		"//10.40.3.214/app/jace/templates/smartwigAssets.html",
-		"//10.40.3.214/app/jace/templates/layout.html",
-		"//10.40.3.214/app/jace/config/prod.php",
-		"/C/Users/jduran/Documents/facturacion/rx/103158553_1.txt",
-		"/C/Users/jduran/Documents/facturacion/rx/103158553.txt",
-		"/C/httpServer/vhosts/jace/web/jquery4php-assets/styles/jqgrid/ui.jqgrid.css"
+		"//10.40.3.214/app/jace/templates/layout.html"
 	],
 	"find":
 	{
@@ -885,6 +887,11 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"th",
+			"Imagen",
+			"IMAGEN",
+			"Imagen",
+			"monolog",
 			"$periodo",
 			"periodo",
 			"Periodo",
@@ -1007,12 +1014,7 @@
 			"((",
 			"0,2",
 			"0,",
-			"(n",
-			"0|",
-			"(n",
-			"nvl((",
-			"(i",
-			"/i."
+			"(n"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1031,7 +1033,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -1047,8 +1049,8 @@
 						"selection":
 						[
 							[
-								545,
-								545
+								460,
+								460
 							]
 						],
 						"settings":
@@ -1176,115 +1178,117 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 68.0,
+						"translation.y": 84.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "templates/cliente/unidad.twig",
+					"file": "templates/fact/bitacora.twig",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1538,
+						"buffer_size": 1049,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								563,
-								747
+								474,
+								474
 							]
 						],
 						"settings":
 						{
 							"BracketHighlighterBusy": false,
+							"auto_complete": false,
 							"bh_regions":
 							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
-								"bh_unmatched_content"
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
 							],
+							"open_with_edit": true,
 							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 126.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "templates/fact/facturar.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 624,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								624,
-								610
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 84.0,
+						"translation.y": 168.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "templates/fact/mora_nof.twig",
+					"buffer": 2,
+					"file": "templates/monitor/incidentes.twig",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 939,
+						"buffer_size": 2741,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								218,
-								218
+								2270,
+								2270
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "templates/monitor.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1022,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								702,
+								702
 							]
 						],
 						"settings":
@@ -1304,7 +1308,6 @@
 								"bh_unmatched_close",
 								"bh_unmatched_content"
 							],
-							"open_with_edit": true,
 							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -1318,64 +1321,19 @@
 				},
 				{
 					"buffer": 4,
-					"file": "templates/fact/imagen.twig",
+					"file": "templates/monitor/problemas.twig",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 895,
+						"buffer_size": 585,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								183,
-								183
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"auto_complete": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "templates/fact/abonos.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 891,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								154,
-								154
+								382,
+								382
 							]
 						],
 						"settings":
@@ -1404,13 +1362,162 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "templates/navbar.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2396,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1409,
+								1409
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 378.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -1419,15 +1526,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12773,
+						"buffer_size": 13618,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4348,
-								4410
+								4167,
+								4167
 							]
 						],
 						"settings":
@@ -1556,10 +1663,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1764.0,
+						"translation.y": 1344.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -1568,15 +1675,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6775,
+						"buffer_size": 7040,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3940,
-								3940
+								5739,
+								5739
 							]
 						],
 						"settings":
@@ -1602,10 +1709,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 518.0,
+						"translation.y": 420.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
@@ -1648,7 +1755,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -1664,8 +1771,8 @@
 						"selection":
 						[
 							[
-								2189,
-								2189
+								777,
+								777
 							]
 						],
 						"settings":
@@ -1794,181 +1901,33 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 588.0,
+						"translation.y": 42.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "templates/navbar.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1540,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								566,
-								566
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"codeintel": true,
-							"codeintel_config":
-							{
-								"JavaScript":
-								{
-									"codeintel_max_recursive_dir_depth": 2,
-									"codeintel_scan_files_in_project": false,
-									"javascriptExtraPaths":
-									[
-									]
-								},
-								"PHP":
-								{
-									"codeintel_max_recursive_dir_depth": 5,
-									"codeintel_scan_files_in_project": false,
-									"phpExtraPaths":
-									[
-									]
-								},
-								"Python":
-								{
-									"env":
-									{
-									}
-								}
-							},
-							"codeintel_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_live": true,
-							"codeintel_live_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_max_recursive_dir_depth": 10,
-							"codeintel_scan_exclude_dir":
-							{
-								"JavaScript":
-								[
-									"/build/",
-									"/min/"
-								]
-							},
-							"codeintel_scan_files_in_project": true,
-							"codeintel_selected_catalogs":
-							[
-								"PyWin32",
-								"jQuery",
-								"Rails"
-							],
-							"codeintel_snippets": true,
-							"codeintel_syntax_map":
-							{
-								"Python Django": "Python"
-							},
-							"codeintel_tooltips": "popup",
-							"sublime_auto_complete": true,
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
+					"stack_index": 11,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 3,
+			"selected": 4,
 			"sheets":
 			[
 				{
-					"buffer": 11,
+					"buffer": 10,
 					"file": "src/facturacion/facturacion.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 19625,
+						"buffer_size": 20951,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								19115,
-								19115
+								19751,
+								19751
 							]
 						],
 						"settings":
@@ -1993,14 +1952,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 6598.0,
+						"translation.y": 6914.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 11,
 					"file": "src/jqTools/jqTools.php",
 					"semi_transient": false,
 					"settings":
@@ -2041,24 +2000,24 @@
 						"translation.y": 1134.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 12,
 					"file": "src/cliente/cliente.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8383,
+						"buffer_size": 8557,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8383,
-								8383
+								786,
+								786
 							]
 						],
 						"settings":
@@ -2187,10 +2146,54 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2772.0,
+						"translation.y": 42.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "src/seguridad/seguridad.php",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 7257,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5773,
+								6089
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2310.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -2199,15 +2202,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 14818,
+						"buffer_size": 18619,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4279,
-								4419
+								9084,
+								9084
 							]
 						],
 						"settings":
@@ -2335,11 +2338,11 @@
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 21.0,
-						"translation.y": 1470.0,
+						"translation.x": 0.0,
+						"translation.y": 2818.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -2379,13 +2382,13 @@
 		"cols":
 		[
 			0.0,
-			0.46479505504,
+			0.446260191845,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
-			0.416312056737,
+			0.449472678499,
 			1.0
 		]
 	},

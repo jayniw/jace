@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}RESUMEN{% endblock %}
+
+{% block content %}
+  <div id="content">
+    <div class="counter_blue" align="center">
+      RESUMEN {{ periodo|e }}
+    </div>
+    <table width='100%'>
+      <tr  valign="top">
+        <td width='50%'>
+          {% if gridMonResumen is null %}
+            <div class="counter_red" align="center">
+              No se tiene data de monitoreo para el periodo.
+            </div>
+          {% else %}
+            {{ component_render(gridMonResumen) }}
+          {% endif %}
+        </td>
+        <td>
+          {% if gridProcResumen is null %}
+            <div class="counter_red" align="center">
+              No se tiene data de procesos para el periodo.
+            </div>
+          {% else %}
+            {{ component_render(gridProcResumen) }}
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+{% endblock %}
