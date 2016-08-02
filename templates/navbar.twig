@@ -1,5 +1,4 @@
 {% block navbar %}
-
 <table width="100%">
   <tr>
     <td>
@@ -11,11 +10,11 @@
              orientation="vertical"
              position={'my':"right top",'at':"left top"}
              triggerEvent="mouseenter" %}
-          {% set Ousuarios = app.url_generator.generate('usuarios') %}
-          {% menu_item label="Usuarios" onclick="location.href=algo" %}
-          {% menu_item label="Roles" %}
-          {% menu_item label="Menu" %}
-          {% menu_item label="Rol-Menu" %}
+          {% set Ousuarios = "location.href=" ~ path('usuarios') %}
+          {% menu_item label="Usuarios" onclick= "location.href='admin/usuarios'" %}
+          {% menu_item label="Roles" onclick="location.href='admin/roles'" %}
+          {% menu_item label="Menu" onclick="location.href='admin/menu'" %}
+          {% menu_item label="Rol-Menu" onclick="location.href='admin/rolMenu'" %}
         {% end_ui_menu %}
 
         {% ui_button id="menuBitacora"  label="BITACORA" %}

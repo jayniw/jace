@@ -23,3 +23,10 @@ $app['antePeriodo']=date('Ym',strtotime('-2 month',strtotime(date('Ym'))));
 $app['antePeriodo']=($app['antePeriodo']==$app['antPeriodo'])
                      ? $app['antePeriodo']-1
                      : $app['antePeriodo'] ;
+/*fechas mes actual*/
+$fecha = new DateTime();
+$fecha->modify('first day of this month');
+$app['first_day']=$fecha->format('m-d-Y');
+$fecha->modify('last day of this month');
+$app['last_day']=$fecha->format('m-d-Y');
+$app['periodo_range']=$app['first_day'].' - '.$app['last_day'];

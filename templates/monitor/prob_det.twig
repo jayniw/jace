@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}DETALLE PROBLEMAS{% endblock %}
+{% block navbar %}{% endblock %}
+{% block sideleft %}{% endblock %}
+{% block main %}
+  <div id="monitor">
+    {% if gridProbDet is null %}
+      <div class="counter_red" align="center">
+        No se tiene data de incidentes para el criterio enviado.
+      </div>
+    {% else %}
+      {{ component_render(gridProbDet) }}
+    {% endif %}
+  </div>
+{% endblock %}

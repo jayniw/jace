@@ -1,64 +1,37 @@
 {% extends "layout.html" %}
 
-{% block title %}ITSM{% endblock %}
-  {% block refresh %}
+{% block title %}MONITOR{% endblock %}
+{% block refresh %}
   <META HTTP-EQUIV="REFRESH" CONTENT="300">
 {% endblock %}
 {% block navbar %}{% endblock %}
 {% block sideleft %}{% endblock %}
 {% block main %}
-<div id="content">
+<div id="monitor">
   <table width="100%" cellspacing="5" align="center">
-    {% if gridRepPeriodo is not null %}
-    <tr>
-      <td colspan="2">
-        {{ component_render(gridRepPeriodo) }}
-      </td>
-    </tr>
-    {% endif %}
     <tr valign="top">
-      <td width="50%">
-        {#<div class="btn" align="center">INCIDENTES FACTURACION</div>
-        {% embed 'operativa/tabla_template.twig'
-            with { 'dataIncidentes' : dataIncBill } %}
-        {% endembed %#}
+      <td width="45%" id="incidentesId">
         {% embed 'monitor/incidentes.twig'
-            with { 'dataIncPend' : dataIncPend,
-                   'dataIncidentes' : dataIncBill } %}
-        {% endembed %}
-        <br>
-        <div class="btn" align="center">REPORTE INCIDENTES DEL DIA</div>
-        {% embed 'operativa/tabla_template.twig'
-            with { 'dataIncidentes' : dataIncRep } %}
+            with { 'titulo':'INCIDENTES FACTURACION',
+                   'dataIncPend' : dataIncPend,
+                   'dataIncPendRes' : dataIncPendRes }
+        %}
         {% endembed %}
       </td>
       <td>
-        <div class="btn" align="center">PROBLEMAS FACTURACION</div>
-        <table id="mon">
-          <tr>
-            <th>GRUPO</th>
-            <th>CREACION</th>
-            <th>PROB</th>
-            <th>ASIGNADO A</th>
-            <th>SLA</th>
-            <th>CAL</th>
-            <th>DEMORA</th>
-          </tr>
-          {% for prob in dataProbBill %}
-          <tr>
-            <td>{{ prob.GRUPO|e }}</td>
-            <td>{{ prob.CREACION|e }}</td>
-            <td>{{ prob.CODIGO|e }}</td>
-            <td>{{ prob.ASIGNADO_A|e }}</td>
-            <td>{{ prob.SLA|e }}</td>
-            <td>{{ prob.CAL|e }}</td>
-            <td>{{ prob.DEMORA_DIAS|e }}</td>
-          </tr>
-          {% endfor %}
-        </table>
+        {% embed 'monitor/problemas.twig'
+            with { 'dataProbBill' : dataProbBill,
+                   'titulo':'PROBLEMAS FACTURACION'}
+        %}
+        {% endembed %}
+        <br>
+        {% embed 'monitor/problemas.twig'
+            with { 'dataProbBill' : dataProbEsp,
+                   'titulo':'PROBLEMAS DE MESAS EXTERNAS C/USR DE FACTURACION'}
+        %}
+        {% endembed %}
       </td>
     </tr>
   </table>
-
 </div>
 {% endblock %}

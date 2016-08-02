@@ -483,7 +483,7 @@ class Facturacion
                            itjduran.format_time((nvl(fin, sysdate)-inicio) * 24) demora
                       from itjduran.log_proc_time
                      where lower(proceso) like ('%abono%')
-                       and to_char(created_at, 'yyyymm') = '$periodo'
+                       and created_at>=trunc(last_day(sysdate-5))
                      order by id";
     return $this->app['db']->fetchAll($sqlProcAbonos);
   }
@@ -502,11 +502,11 @@ class Facturacion
                                   bb.fecha_fin
                              from billing.bit_bitacora bb, billing.bit_tareas tt
                             where nvl(bb.fecha_fin, sysdate) between
-                                  last_day(sysdate- 5) and
+                                  trunc(last_day(sysdate- 5)) and
                                   to_date('05-' || to_char(sysdate+1, 'mm-yyyy'),
                                           'DD-MM-YYYY HH24:MI:SS')
                                and bb.id_tarea = tt.id
-                            order by bb.secuencia asc";
+                            order by tt.secuencia asc";
     return $this->app['db']->fetchAll($sqlGetTareasBitacora);
   }
   /**

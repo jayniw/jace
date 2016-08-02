@@ -12,7 +12,8 @@
     <tr valign="top">
       <td width="45%" id="incidentesId">
         {% embed 'monitor/incidentes.twig'
-            with { 'dataIncPend' : dataIncPend,
+            with { 'titulo':'INCIDENTES FACTURACION',
+                   'dataIncPend' : dataIncPend,
                    'dataIncPendRes' : dataIncPendRes }
         %}
         {% endembed %}

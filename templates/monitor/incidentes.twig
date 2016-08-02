@@ -1,75 +1,170 @@
-{% set h6,h6_12,h12_24,h24_48,h48_72,h72_168,h168,total = 0,0,0,0,0,0,0,0 %}
-
-<div class="btn" align="center">INCIDENTES FACTURACION</div>
+{% set h6, h16, h24, h32, h48, h_48, h0 = 0,0,0,0,0,0,0 %}
+{% set total,demorados,cumplidos,por_demorados,por_cumplidos = 0,0,0,0,0 %}
+{% set tieneEsp = 'all' %}
+{% set alarmar = 0 %}
+<div class="btncito" align="center">{{ titulo|e }}</div>
 <table id="mon">
-  <tr>
-    <th>GRUPO</th>
-    <th>< 6</th>
-    <th>6-12</th>
-    <th>12-24</th>
-    <th>24-48</th>
-    <th>48-72</th>
-    <th>72-168</th>
-    <th>>168</th>
-    <th>TOTAL</th>
-  </tr>
-  {% for resumen in dataIncPendRes %}
-  <tr>
-    <td>{{ resumen.GRUPO|e }}</td>
+
+  {% for resumen in dataIncResumen %}
+    {% if resumen.POR_CUMPLIDOS <= 94.99 %}
+      {% set color = 'red' %}
+    {% else %}
+      {% set color = null %}
+    {% endif %}
+  <tr align="center" >
+    <td align="right">
+      <font color="{{ color }}">{{ resumen.SUBGERENCIA|e }}</font>
+    </td>
+
+    {% if resumen.ESP is defined %}
+    <td align="right">
+      <font color="{{ color }}">{{ resumen.ESP|e }}</font>
+      {% set tieneEsp = resumen.ESP %}
+    </td>
+    {% endif %}
+
     <td>
-      {% if resumen.H6 > 0 %}
-        {{ resumen.H6|e }} {% set h6 = h6 + resumen.H6 %}
+      {% if resumen.TOTAL > 0 %}
+        <a href="{{ path('itsm_inc_det',
+                         {'subgerencia':resumen.SUBGERENCIA,
+                          'grupo':'all',
+                          'esp':tieneEsp,
+                          'vencido':'all',
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="{{ color }}">
+        {{ resumen.TOTAL|e }}
+        </font>
+        {% set total = total + resumen.TOTAL %}
       {% endif %}
     </td>
     <td>
-      {% if resumen.H6_12 > 0 %}
-        {{ resumen.H6_12|e }} {% set h6_12 = h6_12 + resumen.H6_12 %}
+      {% if resumen.DEMORADOS > 0 %}
+        <a href="{{ path('itsm_inc_det',
+                         {'subgerencia':resumen.SUBGERENCIA,
+                          'grupo':'all',
+                          'esp':tieneEsp,
+                          'vencido':1,
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="{{ color }}">
+          {{ resumen.DEMORADOS|e }}
+        </font>
+        </a>
+        {% set demorados = demorados + resumen.DEMORADOS %}
       {% endif %}
     </td>
     <td>
-      {% if resumen.H12_24 > 0 %}
-        {{ resumen.H12_24|e }} {% set h12_24 = h12_24 + resumen.H12_24 %}
+      {% if resumen.CUMPLIDOS > 0 %}
+        <a href="{{ path('itsm_inc_det',
+                         {'subgerencia':resumen.SUBGERENCIA,
+                          'grupo':'all',
+                          'esp':tieneEsp,
+                          'vencido':0,
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="{{ color }}">
+        {{ resumen.CUMPLIDOS|e }}
+        </font>
+        </a>
+        {% set cumplidos = cumplidos + resumen.CUMPLIDOS %}
       {% endif %}
     </td>
     <td>
-      {% if resumen.H24_48 > 0 %}
-        {{ resumen.H24_48|e }} {% set h24_48 = h24_48 + resumen.H24_48 %}
+      <font color="{{ color }}">
+      {% if resumen.POR_DEMORADOS > 0 %}
+        {{ resumen.POR_DEMORADOS|e }}
       {% endif %}
+      </font>
     </td>
     <td>
-      {% if resumen.H48_72 > 0 %}
-        <a class='counter_red'>{{ resumen.H48_72|e }} {% set h48_72 = h48_72 + resumen.H48_72 %}</a>
+      <font color="{{ color }}">
+      {% if resumen.POR_CUMPLIDOS > 0 %}
+        {{ resumen.POR_CUMPLIDOS|e }}
       {% endif %}
+      </font>
     </td>
-    <td>
-      {% if resumen.H72_168 > 0 %}
-        <a class='counter_red'>{{ resumen.H72_168|e }} {% set h72_168 = h72_168 + resumen.H72_168 %}</a>
-      {% endif %}
-    </td>
-    <td>
-      {% if resumen.H168 > 0 %}
-        <a class='counter_red'>{{ resumen.H168|e }} {% set h168 = h168 + resumen.H168 %}</a>
-      {% endif %}
-    </td>
-    <td>{{ resumen.TOTAL|e }} {% set total = total + resumen.TOTAL %}</td>
   </tr>
   {% endfor %}
   <tfoot>
   <tr align="center">
     <td align="right">TOTAL</td>
-    <td>{{ h6 }}</td>
-    <td>{{ h6_12 }}</td>
-    <td>{{ h12_24 }}</td>
-    <td>{{ h24_48 }}</td>
-    <td>{{ h48_72 }}</td>
-    <td>{{ h72_168 }}</td>
-    <td>{{ h168 }}</td>
-    <td>{{ total }}</td>
+    {% if tieneEsp != 'all' %}
+    <td></td>
+    {% endif %}
+    <td>
+      <a href="{{ path('itsm_inc_det',
+                         {'subgerencia':'all',
+                          'grupo':'all',
+                          'esp':'all',
+                          'vencido':'all',
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="white">{{ total }}</font>
+      </a>
+    </td>
+    <td>
+      <a href="{{ path('itsm_inc_det',
+                         {'subgerencia':'all',
+                          'grupo':'all',
+                          'esp':'all',
+                          'vencido':'1',
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="white">{{ demorados }}</font>
+      </a>
+    </td>
+    <td>
+      <a href="{{ path('itsm_inc_det',
+                         {'subgerencia':'all',
+                          'grupo':'all',
+                          'esp':'all',
+                          'vencido':'0',
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="white">{{ cumplidos }}</font>
+      </a>
+    </td>
+    <td>
+      {% set por_demorados = (demorados/total)*100 %}
+      {{ por_demorados|round(2,'floor') }}
+    </td>
+    <td>
+      {% set por_cumplidos = (cumplidos/total)*100 %}
+      {{ por_cumplidos|round(2,'floor') }}
+    </td>
   </tr>
   </tfoot>
+  <thead>
+  <tr>
+    <th>SUBGERENCIA</th>
+    {% if tieneEsp != 'all' %}
+    <th>ESPECIALISTA</th>
+    {% endif %}
+    <th width="75">TOTAL</th>
+    <th width="75">DEMORADOS / REASIGNADOS</th>
+    <th width="75">CUMPLIDOS</th>
+    <th width="87">% DEMORADOS</th>
+    <th width="87">% CUMPLIDOS</th>
+  </tr>
+  </thead>
 </table>
 <br>
-<table id="mon">
+
+{% if dataIncPend is defined %}
+  <table id="mon">
   <tr>
     <th>SLA</th>
     <th>ESP</th>
@@ -78,8 +173,13 @@
     <th>CREACION</th>
     <th>VENCIMIENTO</th>
     <th>ESTADO</th>
+    <th>GRUPO</th>
   </tr>
   {% for incidentes in dataIncPend %}
+    {% if incidentes.ESTADO in ['POR VENCER','VENCIDO'] %}
+      {% set alarmar = alarmar + 1 %}
+      }
+    {% endif %}
     {% if incidentes.ESTADO == 'VENCIDO' %}
       {% set class='counter_red' %}
     {% else %}
@@ -98,6 +198,17 @@
     <td>{{ incidentes.CREACION|e }}</td>
     <td>{{ incidentes.VENCIMIENTO|e }}</td>
     <td><a class="{{ class }}">{{ incidentes.ESTADO|e }}</a></td>
+    <td>{{ incidentes.GRUPO|e }}</td>
   </tr>
   {% endfor %}
 </table>
+{% endif %}
+
+{% if alarmar > 0 and app.request.server.get("REMOTE_ADDR") == '10.47.17.40' %}
+{#{% if app.session.get('user').username == 'jduran' %}#}
+  <!-- evalua si se debe alarmar a gerencia, en caso de tener incidentes por vencer. -->
+  <!-- el ip 10.47.17.40 es de la TV sobre gmercado -->
+  <iframe src="{{ timbrazo }}" height="25" width="90"></iframe>
+  <iframe src="{{ timbrazo }}" height="25" width="90"></iframe>
+  <iframe src="{{ timbrazo }}" height="25" width="90"></iframe>
+{% endif %}

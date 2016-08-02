@@ -4,16 +4,76 @@
 		"selected_items":
 		[
 			[
-				"$usuario",
-				"$usuarioSession"
+				"dataK",
+				"$dataKPIprob〔variable〕"
 			],
 			[
-				"set",
-				"setTareaBitacora〔function〕"
+				"frame",
+				"frame	Tag"
+			],
+			[
+				"fram",
+				"frameset	Tag"
+			],
+			[
+				"scr",
+				"src	Attr"
 			],
 			[
 				"if",
 				"if.	if (block)"
+			],
+			[
+				"str_re",
+				"str_replace〔function〕"
+			],
+			[
+				"ac",
+				"action	Attr"
+			],
+			[
+				"th",
+				"thead	Tag"
+			],
+			[
+				"b",
+				"border	Attr"
+			],
+			[
+				"$whereEs",
+				"$whereEstado〔variable〕"
+			],
+			[
+				"twi",
+				"twig"
+			],
+			[
+				"inc",
+				"inc_det"
+			],
+			[
+				"si",
+				"sitwig	Render a template with the Twig service, provided by Silex application."
+			],
+			[
+				"getIn",
+				"getIncidentesDetalle〔function〕"
+			],
+			[
+				"$where",
+				"$whereVencido〔variable〕"
+			],
+			[
+				"set",
+				"set.	set (block)"
+			],
+			[
+				"por",
+				"por_cumplidos"
+			],
+			[
+				"$usuario",
+				"$usuarioSession"
 			],
 			[
 				"for",
@@ -42,10 +102,6 @@
 			[
 				"get",
 				"getGrupoHist〔function〕"
-			],
-			[
-				"si",
-				"sitwig	Render a template with the Twig service, provided by Silex application."
 			],
 			[
 				"fo",
@@ -86,10 +142,6 @@
 			[
 				"$data",
 				"$dataMenu"
-			],
-			[
-				"ac",
-				"actualizado_por"
 			],
 			[
 				"up",
@@ -312,10 +364,6 @@
 				"created_at"
 			],
 			[
-				"por",
-				"porcentaje"
-			],
-			[
 				"array",
 				"array	$… = array (…)"
 			],
@@ -390,10 +438,6 @@
 			[
 				"usr",
 				"usr"
-			],
-			[
-				"th",
-				"th  (element)"
 			],
 			[
 				"include",
@@ -480,10 +524,18 @@
 			}
 		},
 		{
-			"file": "templates/fact/bitacora.twig",
+			"file": "templates/monitor/inc_det.twig",
 			"settings":
 			{
-				"buffer_size": 1049,
+				"buffer_size": 437,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "templates/monitor/prob_det.twig",
+			"settings":
+			{
+				"buffer_size": 438,
 				"line_ending": "Windows"
 			}
 		},
@@ -491,7 +543,7 @@
 			"file": "templates/monitor/incidentes.twig",
 			"settings":
 			{
-				"buffer_size": 2741,
+				"buffer_size": 6449,
 				"line_ending": "Windows"
 			}
 		},
@@ -499,7 +551,15 @@
 			"file": "templates/monitor.twig",
 			"settings":
 			{
-				"buffer_size": 1022,
+				"buffer_size": 1076,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "templates/monitor/board.twig",
+			"settings":
+			{
+				"buffer_size": 2255,
 				"line_ending": "Windows"
 			}
 		},
@@ -507,7 +567,7 @@
 			"file": "templates/monitor/problemas.twig",
 			"settings":
 			{
-				"buffer_size": 585,
+				"buffer_size": 5377,
 				"line_ending": "Windows"
 			}
 		},
@@ -515,7 +575,15 @@
 			"file": "templates/navbar.twig",
 			"settings":
 			{
-				"buffer_size": 2396,
+				"buffer_size": 2520,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "templates/operativa/itsm.twig",
+			"settings":
+			{
+				"buffer_size": 1076,
 				"line_ending": "Windows"
 			}
 		},
@@ -523,8 +591,16 @@
 			"file": "src/controllers.php",
 			"settings":
 			{
-				"buffer_size": 13618,
+				"buffer_size": 14733,
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/itsm.php",
+			"settings":
+			{
+				"buffer_size": 4211,
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -533,14 +609,6 @@
 			{
 				"buffer_size": 7040,
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "config/prod.php",
-			"settings":
-			{
-				"buffer_size": 1020,
-				"line_ending": "Unix"
 			}
 		},
 		{
@@ -555,7 +623,7 @@
 			"file": "src/facturacion/facturacion.php",
 			"settings":
 			{
-				"buffer_size": 20951,
+				"buffer_size": 20954,
 				"line_ending": "Unix"
 			}
 		},
@@ -587,7 +655,7 @@
 			"file": "src/operativa/operativa.php",
 			"settings":
 			{
-				"buffer_size": 18619,
+				"buffer_size": 26737,
 				"line_ending": "Unix"
 			}
 		}
@@ -731,40 +799,46 @@
 	"expanded_folders":
 	[
 		"/C/httpServer/vhosts/jace",
-		"/C/httpServer/vhosts/jace/src/cliente",
-		"/C/httpServer/vhosts/jace/src/facturacion",
+		"/C/httpServer/vhosts/jace/config",
+		"/C/httpServer/vhosts/jace/src",
 		"/C/httpServer/vhosts/jace/src/monitor",
-		"/C/httpServer/vhosts/jace/src/operativa",
-		"/C/httpServer/vhosts/jace/src/rest",
-		"/C/httpServer/vhosts/jace/src/seguridad",
 		"/C/httpServer/vhosts/jace/templates",
-		"/C/httpServer/vhosts/jace/templates/monitor"
+		"/C/httpServer/vhosts/jace/templates/backend",
+		"/C/httpServer/vhosts/jace/templates/monitor",
+		"/C/httpServer/vhosts/jace/templates/operativa",
+		"/C/httpServer/vhosts/jace/vendor",
+		"/C/httpServer/vhosts/jace/vendor/composer",
+		"/C/httpServer/vhosts/jace/web"
 	],
 	"file_history":
 	[
+		"/C/httpServer/vhosts/chandra/app/config/parameters.yml",
+		"/C/httpServer/vhosts/jace/config/prod.php",
+		"/C/httpServer/vhosts/jace/templates/fact/imagen.twig",
+		"/C/httpServer/vhosts/jace/templates/operativa/reclamos.twig",
+		"/C/httpServer/vhosts/jace/web/theme/layout.css",
+		"/C/httpServer/vhosts/jace/templates/monitor/problemas.twig",
+		"/C/httpServer/vhosts/jace/templates/operativa/tabla_template.twig",
+		"/C/httpServer/vhosts/jace/templates/navbar.twig",
+		"/C/httpServer/vhosts/jace/templates/fact/bitacora.twig",
 		"/C/httpServer/vhosts/jace/templates/backend/usuarios.twig",
 		"/C/httpServer/vhosts/jace/templates/monitor.twig",
 		"/C/httpServer/vhosts/jace/templates/monitor/incidentes.twig",
 		"/C/httpServer/vhosts/jace/templates/fact/abonos.twig",
 		"/C/httpServer/vhosts/jace/templates/fact/resumen.twig",
-		"/C/httpServer/vhosts/jace/templates/fact/imagen.twig",
 		"/C/httpServer/vhosts/jace/templates/fact/mora_nof.twig",
 		"/C/httpServer/vhosts/jace/templates/fact/facturar.twig",
 		"/C/httpServer/vhosts/jace/templates/cliente/unidad.twig",
 		"/C/httpServer/vhosts/jace/composer.json",
-		"/C/httpServer/vhosts/jace/config/prod.php",
 		"/C/httpServer/vhosts/jace/config/dev.php",
 		"/C/httpServer/vhosts/jace/src/app.php",
 		"/C/httpServer/vhosts/jace/src/seguridad/seguridad.php",
 		"/C/httpServer/vhosts/jace/templates/cliente/grupo.twig",
 		"/C/httpServer/vhosts/jace/templates/operativa/itsm.twig",
 		"/C/httpServer/vhosts/jace/templates/fact/tendencias.twig",
-		"/C/httpServer/vhosts/jace/templates/operativa/tabla_template.twig",
 		"/C/httpServer/vhosts/jace/src/monitor/monitor.php",
-		"/C/httpServer/vhosts/jace/web/theme/layout.css",
 		"/C/httpServer/vhosts/jace/templates/fact/factGrupo.twig",
 		"/C/httpServer/vhosts/jace/web/.htaccess",
-		"/C/httpServer/vhosts/jace/templates/operativa/reclamos.twig",
 		"/C/app/rblanco/product/11.1.0/db_1/NETWORK/ADMIN/TNSNAMES.ora",
 		"/C/httpServer/vhosts/jace/templates/backend/rolMenu.twig",
 		"/C/httpServer/vhosts/jace/templates/menu.twig",
@@ -789,7 +863,6 @@
 		"/C/httpServer/vhosts/jace/src/cliente/cliente.php",
 		"/C/httpServer/vhosts/jace/templates/fact/refact.twig",
 		"/C/httpServer/vhosts/jace/templates/operativa/monitor.twig",
-		"/C/httpServer/vhosts/jace/templates/navbar.twig",
 		"/C/httpServer/vhosts/jace/templates/backend/backend.twig",
 		"//10.40.4.20/vhosts/jace/web/.htaccess",
 		"//10.40.4.20/vhosts/jace/templates/backend/roles.twig",
@@ -866,10 +939,7 @@
 		"/C/httpServer/www/.htaccess",
 		"/C/httpServer/vhosts/jace/.htaccess",
 		"/C/httpServer/core/apache2/conf/extra/httpd-userdir.conf",
-		"/C/httpServer/vhosts/jace/templates/reclamos.html",
-		"//10.40.3.214/app/jace/src/controllers.php",
-		"//10.40.3.214/app/jace/templates/smartwigAssets.html",
-		"//10.40.3.214/app/jace/templates/layout.html"
+		"/C/httpServer/vhosts/jace/templates/reclamos.html"
 	],
 	"find":
 	{
@@ -887,6 +957,22 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"bitacor",
+			"itsm_inc_det",
+			"gridIncDet",
+			"dataIncDet",
+			"respuesta_esp",
+			"KPIincidentes",
+			"last_day",
+			"alarmar",
+			"fch",
+			"dataRepPeriodo",
+			"168",
+			"72_168",
+			"48_72",
+			"24_48",
+			"12_24",
+			"6_12",
 			"th",
 			"Imagen",
 			"IMAGEN",
@@ -998,23 +1084,7 @@
 			"error",
 			"src",
 			"app",
-			"jquery4php",
-			"Facturacion",
-			"btn",
-			"href=\"",
-			"src=\"",
-			"td",
-			";\n",
-			"$cur",
-			"$tpl",
-			"tpl",
-			"contact",
-			"item",
-			"acme",
-			"((",
-			"0,2",
-			"0,",
-			"(n"
+			"jquery4php"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1033,7 +1103,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -1049,162 +1119,13 @@
 						"selection":
 						[
 							[
-								460,
-								460
+								737,
+								769
 							]
 						],
 						"settings":
 						{
 							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"codeintel": true,
-							"codeintel_config":
-							{
-								"JavaScript":
-								{
-									"codeintel_max_recursive_dir_depth": 2,
-									"codeintel_scan_files_in_project": false,
-									"javascriptExtraPaths":
-									[
-									]
-								},
-								"PHP":
-								{
-									"codeintel_max_recursive_dir_depth": 5,
-									"codeintel_scan_files_in_project": false,
-									"phpExtraPaths":
-									[
-									]
-								},
-								"Python":
-								{
-									"env":
-									{
-									}
-								}
-							},
-							"codeintel_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_live": true,
-							"codeintel_live_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_max_recursive_dir_depth": 10,
-							"codeintel_scan_exclude_dir":
-							{
-								"JavaScript":
-								[
-									"/build/",
-									"/min/"
-								]
-							},
-							"codeintel_scan_files_in_project": true,
-							"codeintel_selected_catalogs":
-							[
-								"PyWin32",
-								"jQuery",
-								"Rails"
-							],
-							"codeintel_snippets": true,
-							"codeintel_syntax_map":
-							{
-								"Python Django": "Python"
-							},
-							"codeintel_tooltips": "popup",
-							"sublime_auto_complete": true,
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 84.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "templates/fact/bitacora.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1049,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								474,
-								474
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"auto_complete": false,
 							"bh_regions":
 							[
 								"bh_unmatched",
@@ -1218,187 +1139,6 @@
 								"bh_default_close",
 								"bh_default_content"
 							],
-							"open_with_edit": true,
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 168.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "templates/monitor/incidentes.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2741,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2270,
-								2270
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "templates/monitor.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1022,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								702,
-								702
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"auto_complete": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "templates/monitor/problemas.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 585,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								382,
-								382
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"auto_complete": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"open_with_edit": true,
-							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "templates/navbar.twig",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2396,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1409,
-								1409
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"auto_complete": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
 							"codeintel": true,
 							"codeintel_config":
 							{
@@ -1508,33 +1248,411 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 378.0,
+						"translation.y": 117.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 15,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
+				},
 				{
-					"buffer": 6,
-					"file": "src/controllers.php",
+					"buffer": 1,
+					"file": "templates/monitor/inc_det.twig",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13618,
+						"buffer_size": 437,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4167,
-								4167
+								437,
+								0
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"open_with_edit": true,
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "templates/monitor/prob_det.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 438,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								438,
+								438
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"open_with_edit": true,
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "templates/monitor/incidentes.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6449,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								134,
+								59
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "templates/monitor.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1076,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								326,
+								326
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "templates/monitor/board.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2255,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1788,
+								1788
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 386.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "templates/monitor/problemas.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5377,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								739,
+								739
+							],
+							[
+								1317,
+								1317
+							],
+							[
+								1922,
+								1922
+							],
+							[
+								2961,
+								2961
+							],
+							[
+								3394,
+								3394
+							],
+							[
+								3829,
+								3829
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1655.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "templates/navbar.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2520,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1120,
+								1120
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 13.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "templates/operativa/itsm.twig",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1076,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								780,
+								780
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_complete": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"syntax": "Packages/PHP-Twig/Syntaxes/HTML (Twig).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 195.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 9,
+					"file": "src/controllers.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14733,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4531,
+								4531
 							]
 						],
 						"settings":
@@ -1663,27 +1781,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1344.0,
+						"translation.y": 1521.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "src/fact.php",
+					"buffer": 10,
+					"file": "src/itsm.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7040,
+						"buffer_size": 4211,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5739,
-								5739
+								4072,
+								4072
 							]
 						],
 						"settings":
@@ -1709,27 +1827,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 420.0,
+						"translation.y": 776.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "config/prod.php",
+					"buffer": 11,
+					"file": "src/fact.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1020,
+						"buffer_size": 7040,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								901,
-								901
+								4094,
+								4094
 							]
 						],
 						"settings":
@@ -1738,28 +1856,31 @@
 							"auto_complete": false,
 							"bh_regions":
 							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
-								"bh_unmatched_content"
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
 							],
-							"syntax": "Packages/PHP/PHP.tmLanguage"
+							"open_with_edit": true,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 728.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 12,
 					"file": "src/backend.php",
 					"semi_transient": false,
 					"settings":
@@ -1771,8 +1892,8 @@
 						"selection":
 						[
 							[
-								777,
-								777
+								1602,
+								1602
 							]
 						],
 						"settings":
@@ -1780,16 +1901,16 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
-								"bh_unmatched_content"
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
 							],
 							"codeintel": true,
 							"codeintel_config":
@@ -1901,33 +2022,33 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 42.0,
+						"translation.y": 234.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 16,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 4,
+			"selected": 0,
 			"sheets":
 			[
 				{
-					"buffer": 10,
+					"buffer": 13,
 					"file": "src/facturacion/facturacion.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 20951,
+						"buffer_size": 20954,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								19751,
-								19751
+								20023,
+								20023
 							]
 						],
 						"settings":
@@ -1952,14 +2073,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 6914.0,
+						"translation.y": 8838.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 14,
 					"file": "src/jqTools/jqTools.php",
 					"semi_transient": false,
 					"settings":
@@ -1997,14 +2118,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1134.0,
+						"translation.y": 1053.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 15,
 					"file": "src/cliente/cliente.php",
 					"semi_transient": false,
 					"settings":
@@ -2146,14 +2267,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 42.0,
+						"translation.y": 39.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 16,
 					"file": "src/seguridad/seguridad.php",
 					"semi_transient": true,
 					"settings":
@@ -2190,27 +2311,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2310.0,
+						"translation.y": 1521.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 17,
 					"file": "src/operativa/operativa.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 18619,
+						"buffer_size": 26737,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9084,
-								9084
+								26285,
+								26287
 							]
 						],
 						"settings":
@@ -2339,10 +2460,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2818.0,
+						"translation.y": 6673.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -2350,7 +2471,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 34.0
+		"height": 21.0
 	},
 	"input":
 	{
@@ -2382,7 +2503,7 @@
 		"cols":
 		[
 			0.0,
-			0.446260191845,
+			0.661541239363,
 			1.0
 		],
 		"rows":
@@ -2405,7 +2526,7 @@
 	"project": "jace.sublime-project",
 	"replace":
 	{
-		"height": 40.0
+		"height": 38.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -2435,7 +2556,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 2,
+	"selected_group": 1,
 	"settings":
 	{
 	},
@@ -2443,7 +2564,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 147.0,
+	"side_bar_width": 152.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

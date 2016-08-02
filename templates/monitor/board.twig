@@ -1,47 +1,65 @@
-<div class="btn" align="center">{{ dataTrello.name }}</div>
-{% for listas in dataTrello.lists %}
-  <div class="btn_menu_gray" align="center">{{ listas.name }}</div>
-  <table id="cant" width="95%">
-  <tr>
-    <th>NOMBRE</th>
-    <th>MIEMBROS</th>
-    <th>%</th>
-    <th>ULTIMO ACCESO</th>
-    <th>DEAD LINE</th>
-  </tr>
-  {% for tarjetas in dataTrello.cards %}
-    {% if listas.id == tarjetas.idList %}
-      {% set items = tarjetas.badges %}
+{% extends "layout.html" %}
 
-      {% set porcentaje = 100 %}
-      <tr>
-        <td>{{ tarjetas.name|e }}</td>
-        <td>
-          {% for miembros in tarjetas.idMembers %}
-            {% for esp in dataTrello.members %}
-              {% if esp.id == miembros %}
-                [{{ esp.initials|e }}]
-              {% endif %}
-            {% endfor %}
-          {% endfor %}
-        </td>
-        <td>
-          {% if items.checkItems > 0 %}
-            {% set por = items.checkItemsChecked / items.checkItems * 100 %}
-             {{ por|round (1) }}
-           {% endif %}
-        </td>
-        <td>{{ tarjetas.dateLastActivity|slice(0,10) }}</td>
-        <td>{{ tarjetas.due|slice(0,10) }}</td>
-      </tr>
-    {% endif %}
-  {% endfor %}
+{% block title %}MONITOR{% endblock %}
+{% block refresh %}
+  <!-- <META HTTP-EQUIV="REFRESH" CONTENT="300"> -->
+{% endblock %}
+
+{% block content %}
+<div id="monitor">
+{% set fch = "now"|date("d/m/Y") %}
+{% set periodo = periodo|default('01/01/2016') %}
+  <table width="100%" cellspacing="5" align="center">
+    <tr>
+      <td colspan="2">
+        <form action="{{ path('itsm_mon_fact') }}" method="POST">
+          <label for="subgerencia">Subgerencia:</label>
+          <select name="subgerencia" id="subgerencia" class="sel">
+            <option value="all">TODAS</option>
+            <option value="CRM">CRM</option>
+            <option value="SEGURIDAD">SEGURIDAD</option>
+            <option value="SAP">SAP</option>
+            <option value="VAS">VAS</option>
+            <option value="POSTPAGO">POSTPAGO</option>
+          </select>
+          <label for="periodo">Rago de fechas:</label>
+          {% ui_datepicker name="periodo"
+                           class="sel"
+                           value=periodo
+                           range=true
+                           presets={'specificDate': 'Specific Date',
+                                    'dateRange' : 'Date Range'}
+          %}
+          <button type="submit" value="generar" class="btncito">Generar</button>
+        </form>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="50%" id="incidentesId">
+        {% embed 'monitor/incidentes.twig'
+            with { 'titulo':'INCIDENTES x SUBGERENCIA',
+                   'dataIncResumen' : dataKPIincMes }
+        %}
+        {% endembed %}
+        {% embed 'monitor/incidentes.twig'
+            with { 'titulo':'INCIDENTES x ESPECIALISTA',
+                   'dataIncResumen' : dataKPIincEsp }
+        %}
+        {% endembed %}
+      </td>
+      <td id="problemasId">
+        {% embed 'monitor/problemas.twig'
+            with { 'titulo':'PROBLEMAS x SUBGERENCIA',
+                   'dataProbResumen' : dataKPIprob }
+        %}
+        {% endembed %}
+        {% embed 'monitor/problemas.twig'
+            with { 'titulo':'PROBLEMAS x ESPECIALISTA',
+                   'dataProbResumen' : dataKPIprobEsp }
+        %}
+        {% endembed %}
+      </td>
+    </tr>
   </table>
-{% endfor %}
-{# <pre>{{ dump(dataTrello) }}</pre> #}
-
-<!--img src="https://trello.com/b/7UVwPWSi.png" /-->
-<!--iframe src="https://trello.com/b/7UVwPWSi.html"
-        frameborder="0"
-        width="100%"
-        height="400"></iframe-->
+</div>
+{% endblock %}

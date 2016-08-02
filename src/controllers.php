@@ -23,6 +23,8 @@ $app->mount('/admin', include 'backend.php');
 
 $app->mount('/factPer', include 'fact.php');
 
+$app->mount('/itsm', include 'itsm.php');
+
 $app->match(
   '/',
   function (Request $request) use ($app) {
@@ -117,16 +119,27 @@ $app->match(
     $jq=new jqTools\JqTools();
     /*obtener los tickets pendientes y su demora para clientes internos*/
     $ticket=new Operativa\Operativa($app);
+    //obtener los incidentes del mes y agruparlos por subgerencia
+    $dataKPIincMes=$ticket->getKPIincidentes($app['periodo_range'],'POSTPAGO',0);
+    //opbtener los problemas del mes y agruparlos por subgerencia
+    $dataKPIprobMes=$ticket->getKPIproblemas($app['periodo_range'],'POSTPAGO',0);
+    //
     $dataIncPend=$ticket->getIncidentesPenDet();
     $dataIncPendRes=$ticket->getIncPendResumen();
     $dataProbBill=$ticket->getProbPend();
     $dataProbEsp=$ticket->getProbPend('esp');
 
+    $timbrazo="http://10.31.3.235/gestion/timbrazo.php?origen=70710170&destino=70710170";
+
     return $app['twig']->render('monitor.twig',array(
+          'periodo'=>$app['periodo_range'],
+          'dataIncResumen' => $dataKPIincMes,
           'dataIncPendRes'=>$dataIncPendRes,
+          'dataProbResumen' => $dataKPIprobMes,
           'dataProbBill'=>$dataProbBill,
           'dataIncPend'=> $dataIncPend,
           'dataProbEsp'=>$dataProbEsp,
+          'timbrazo'=>$timbrazo,
           ));
   }
 )->bind('monitor');
@@ -137,25 +150,36 @@ $app->match(
   /*Obtener incidentes de IT*/
   $ticket=new Operativa\Operativa($app);
   $jq=new jqTools\JqTools();
+  //obtener los incidentes del mes y agruparlos por subgerencia
+  $dataKPIincMes=$ticket->getKPIincidentes($app['periodo_range'],'all',0);
+  //opbtener los problemas del mes y agruparlos por subgerencia
+  $dataKPIprobMes=$ticket->getKPIproblemas($app['periodo_range'],'all',0);
+  //
   $dataIncBill=$ticket->getIncPendResumen('facturacion');
   $dataIncPend=$ticket->getIncidentesPenDet('facturacion');
   $dataProbBill=$ticket->getProbPend('facturacion');
   $dataIncRep=$ticket->getIncRep(date('Ymd'));
-  $dataRepPeriodo=$ticket->getRepPeriodo(date('Ym'));
-  if (count($dataRepPeriodo)==0) {
-    $gridRepPeriodo=null;
-  } else {
-    $gridRepPeriodo=$jq->tabla($dataRepPeriodo,
-                               'Reporte de periodo',
-                               'repPeriodoId');
-  }
+
+  $dataProbEsp=$ticket->getProbPend('esp');
+  //$dataRepPeriodo=$ticket->getRepPeriodo(date('Ym'));
+  //if (count($dataRepPeriodo)==0) {
+  //  $gridRepPeriodo=null;
+  //} else {
+  //  $gridRepPeriodo=$jq->tabla($dataRepPeriodo,
+  //                             'Reporte de periodo',
+  //                             'repPeriodoId');
+  //}
   return $app['twig']->render('operativa/itsm.twig',array(
+      'periodo'=>$app['periodo_range'],
+      'dataIncResumen' => $dataKPIincMes,
       'dataIncBill' => $dataIncBill,
+      'dataProbResumen' => $dataKPIprobMes,
       'dataProbBill'=>$dataProbBill,
       'dataIncRep' => $dataIncRep,
-      'gridRepPeriodo' => $gridRepPeriodo,
+      //'gridRepPeriodo' => $gridRepPeriodo,
       'dataIncPend' => $dataIncPend,
       'dataIncPendRes' => $dataIncBill,
+      'dataProbEsp'=>$dataProbEsp,
       ));
 }
 )->bind('itsm');

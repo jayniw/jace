@@ -71,22 +71,24 @@ class Operativa
     }
     $sqlIncPendResumen="SELECT grupo,
                                sum(h6) h6,
-                               sum(h6_12) h6_12,
-                               sum(h12_24) h12_24,
-                               sum(h24_48) h24_48,
-                               sum(h48_72) h48_72,
-                               sum(h72_168) h72_168,
-                               sum(h168) h168,
+                               sum(h16) h16,
+                               sum(h24) h24,
+                               sum(h32) h32,
+                               sum(h48) h48,
+                               sum(h_48) h_48,
+                               sum(h0) h0,
                                count(*) total
                           from (select x.grupo,
                                        x.demora,
-                                       case when demora<6 then 1 else 0 end h6,
-                                       case when demora between 6 and 12 then 1 else 0 end h6_12,
-                                       case when demora between 12 and 24 then 1 else 0 end h12_24,
-                                       case when demora between 24 and 48 then 1 else 0 end h24_48,
-                                       case when demora between 48 and 72 then 1 else 0 end h48_72,
-                                       case when demora between 72 and 168 then 1 else 0 end h72_168,
-                                       case when demora>168 then 1 else 0 end h168
+                                       case when sla_horas = 6 then 1 else 0 end h6,
+                                       case when sla_horas = 16 then 1 else 0 end h16,
+                                       case when sla_horas = 24 then 1 else 0 end h24,
+                                       case when sla_horas = 32 then 1 else 0 end h32,
+                                       case when sla_horas = 48 then 1 else 0 end h48,
+                                       case when sla_horas > 48 then 1 else 0 end h_48,
+                                       case when nvl(sla_horas, 0) = 0 then 1 else 0 end h0,
+                                       x.sla_horas,
+                                       x.codigo
                                   from (select t.grupo,
                                                t.sla_horas,
                                                t.fecha_creacion,
@@ -100,7 +102,7 @@ class Operativa
                                                $where
                                            .") x)
                          group by grupo
-                         order by grupo asc";
+                         order by 9 desc";
     return $this->app['dbs']['itsm']->fetchAll($sqlIncPendResumen);
   }
   /**
@@ -113,35 +115,27 @@ class Operativa
       case 'facturacion':
         $where = "and exists (select *
                                 from bil_mon.vw_grupos_billing gb
-                               where gb.NAME=vv.PAWSVCAUTHGROUPSNAME)";
+                               where gb.NAME=vv.grupo)";
         break;
       case null:
         $where =null;
         break;
       default:
-        $where="and vv.PAWSVCAUTHGROUPSNAME like ('%$mesa%')";
+        $where="and vv.grupo like ('%$mesa%')";
         break;
     }
-    $sqlGetIncidentesPenDet="SELECT replace(replace(padslasname, ' horas', ''), 'Interno ', '') sla,
-                                    vv.type || ' '||vv.code codigo,
-                                    nvl(vv.PAWSVCAUTHUSERSRESPONSFULLNAME,
-                                       'SIN ASIGNAR') esp,
-                                    vv.incidenttitle titulo,
-                                    vv.creationdate creacion,
-                                    vv.estimateddate vencimiento,
-                                    case
-                                      when vv.expired <> 0 then
-                                       'VENCIDO'
-                                      when vv.estimateddate between sysdate - 1 / 24 and sysdate then
-                                       'POR VENCER'
-                                      else
-                                       'A TIEMPO'
-                                    end estado
-                               from bil_mon.vw_incidentes vv
-                              where vv.STATUS = 2
-                                and vv.PADSTATUSNAME = 'En atención'
+    $sqlGetIncidentesPenDet="SELECT vv.sla_horas   sla,
+                                     vv.esp,
+                                     vv.codigo,
+                                     vv.titulo,
+                                     vv.creacion,
+                                     vv.vencimiento,
+                                     vv.venc estado,
+                                     vv.grupo
+                                from bil_mon.vw_incidentes_bill vv
+                              where vv.estado = 'Asignada a un grupo'
                                  $where
-                               order by vv.creationdate asc";
+                               order by vv.vencimiento asc";
     return $this->app['dbs']['itsm']->fetchAll($sqlGetIncidentesPenDet);
   }
   /**
@@ -214,7 +208,7 @@ class Operativa
                                where gb.NAME=pp.pawSvcAuthGroupsName)";
         break;
       case 'esp':
-        $where = "and (pp.pawSvcAuthUsersInvFullName in
+        $where = "and (pp.pawSvcAuthUsersInvSignFullName in
                        ('Daviu Arevalo, Julio',
                          'Maldonado, Gustavo',
                          'Gallinate, Juan',
@@ -248,7 +242,7 @@ class Operativa
                                  when pp.status = 4 then
                                   pp.pawSvcAuthUsersCloserFullName
                                  else
-                                  pp.pawSvcAuthUsersInvFullName
+                                  nvl(pp.pawSvcAuthUsersInvFullName,pp.pawSvcAuthUsersInvSignFullName)
                                 end asignado_a,
                                 substr(pp.padSLAsName, 7, 5) sla,
                                 substr(pp.padCalendarsName, 12) cal,
@@ -262,7 +256,7 @@ class Operativa
                            from panet.viewallproblems pp
                           where status not in (1,5,6)
                                 $where
-                          order by pp.creationDate
+                          order by pp.pawSvcAuthGroupsName asc,pp.estimatedDate asc
                           ";
     return $this->app['dbs']['itsm']->fetchAll($sqlProbPendResumen);
   }
@@ -359,5 +353,186 @@ class Operativa
                       group by esp
                       order by min(apertura)";
     return $this->app['dbs']['scenter']->fetchAll($sqlTicketsCall);
+  }
+  /**
+   * obtener cumplimiento de KPI por subgerencia
+   * @param  string $periodo     periodo a evaluar en formato YYYYMM
+   * @param  string $subgerencia subgenerencia a mostra, '' todas
+   * @return array              data de resultados
+   */
+  public function getKPIincidentes($periodo,$subgerencia,$esp)
+  {
+    //echo $periodo.'|'.count($periodo).'|'.(strpos($periodo,' - ')+3);
+    $where = (strlen ($periodo) <= 10)
+           ? " where trunc(nvl(vv.respuesta_esp,sysdate)) =  to_date('$periodo','mm-dd-yyyy')"
+           : " where nvl(vv.respuesta_esp,sysdate) between
+                          to_date('".substr($periodo, 0,strpos($periodo,' - '))."','mm-dd-yyyy') and
+                          to_date('".substr($periodo, (strpos($periodo,' - ')+3))."','mm-dd-yyyy')+1" ;
+    $where .= ($subgerencia<>'all') ? " and subgerencia='$subgerencia'" : null ;
+    $groupEsp = ($esp==1) ? ',esp' : null ;
+    $sqlKPIincidentes="SELECT subgerencia
+                              $groupEsp,
+                              count(*) total,
+                              sum(exp) demorados,
+                              count(*) - sum(exp) cumplidos,
+                              round(sum(exp) / count(*) * 100, 2) por_demorados,
+                              round((count(*) - sum(exp)) / count(*) * 100, 2) por_cumplidos
+                         from (select subgerencia,
+                                      esp,
+                                      case
+                                       when exp=0 then 0
+                                       else 1
+                                       end exp
+                                 from bil_mon.vw_incidentes_bill vv
+                               $where
+                        )
+                        group by subgerencia$groupEsp
+                        order by por_demorados desc";
+    return  $this->app['dbs']['itsm']->fetchAll($sqlKPIincidentes);
+  }
+  /**
+   * obtener los incidentes segun criterio ingresado
+   * @param  string $subgerencia subgenrecia
+   * @param  string $grupo       grupo, mesa
+   * @param  string $esp         especialista
+   * @param  string $vencido     mostrar vencidos?
+   * @param  string $periodo     periodo de fechas a mostrar
+   * @param  string $estado      filtro de estados
+   * @return array              data resultante
+   */
+  public function getIncidentesDetalle($subgerencia='all',$grupo='all',$esp='all',$vencido='all',$periodo='all',$estado='all')
+  {
+    $wherePeriodo = (strlen ($periodo) === 10)
+           ? " and trunc(nvl(vv.respuesta_esp,sysdate)) =  to_date('$periodo','mm-dd-yyyy')"
+           : " and trunc(nvl(vv.respuesta_esp,sysdate)) between
+                          to_date('".substr($periodo, 0,strpos($periodo,' - '))."','mm-dd-yyyy') and
+                          to_date('".substr($periodo, (strpos($periodo,' - ')+3))."','mm-dd-yyyy')+1" ;
+
+    $whereSubgerencia = ($subgerencia<>'all') ? " and vv.subgerencia='$subgerencia'" : null ;
+    $whereGrupo = ($grupo<>'all') ? " and vv.grupo='$grupo'" : null ;
+    $whereEsp = ($esp<>'all') ? " and vv.esp='$esp'" : null ;
+    if ($vencido<>'all') {
+      if ($vencido==0) {
+        $whereVencido = " and vv.exp=$vencido";
+      } else {
+        $whereVencido = " and vv.exp<>0";
+      }
+     }else {
+      $whereVencido = null;
+    }
+    $whereEstado = ($estado<>'all') ? " and vv.estado='$estado'" : null ;
+
+    $sqlIncidentesDetalle="SELECT vv.sla_horas sla,
+                                  vv.esp,
+                                  vv.codigo,
+                                  vv.titulo,
+                                  vv.creacion,
+                                  vv.vencimiento,
+                                  vv.venc expirado,
+                                  vv.estado,
+                                  vv.subestado,
+                                  vv.grupo,
+                                  vv.subgerencia
+                             from bil_mon.vw_incidentes_bill vv
+                            where 1=1
+                            $whereSubgerencia
+                            $whereGrupo
+                            $whereEsp
+                            $whereVencido
+                            $wherePeriodo
+                            $whereEstado
+                            order by vv.vencimiento asc";
+
+    return  $this->app['dbs']['itsm']->fetchAll($sqlIncidentesDetalle);
+  }
+
+  /**
+   * obtener cumplimiento de KPI por subgerencia
+   * @param  string $periodo     periodo a evaluar en formato YYYYMM
+   * @param  string $subgerencia subgenerencia a mostra, '' todas
+   * @return array              data de resultados
+   */
+  public function getKPIproblemas($periodo,$subgerencia,$esp)
+  {
+    //echo $periodo.'|'.count($periodo).'|'.(strpos($periodo,' - ')+3);
+    $where = (strlen ($periodo) <= 10)
+           ? " where trunc(nvl(vv.modificacion,sysdate)) =  to_date('$periodo','mm-dd-yyyy')"
+           : " where nvl(vv.modificacion,sysdate) between
+                          to_date('".substr($periodo, 0,strpos($periodo,' - '))."','mm-dd-yyyy') and
+                          to_date('".substr($periodo, (strpos($periodo,' - ')+3))."','mm-dd-yyyy')+1" ;
+    $where .= ($subgerencia<>'all') ? " and subgerencia='$subgerencia'" : null ;
+    $groupEsp = ($esp==1) ? ',esp' : null ;
+    $sqlKPIproblemas="SELECT subgerencia
+                              $groupEsp,
+                              count(*) total,
+                              sum(exp) demorados,
+                              count(*) - sum(exp) cumplidos,
+                              round(sum(exp) / count(*) * 100, 2) por_demorados,
+                              round((count(*) - sum(exp)) / count(*) * 100, 2) por_cumplidos
+                         from (select subgerencia,
+                                      asignado_a esp,
+                                      exp,
+                                      codigo
+                                 from bil_mon.vw_problemas_bill vv
+                               $where
+                        )
+                        group by subgerencia$groupEsp
+                        order by por_demorados desc";
+    return  $this->app['dbs']['itsm']->fetchAll($sqlKPIproblemas);
+  }
+
+  /**
+   * obtener los problemas segun criterio ingresado
+   * @param  string $subgerencia subgenrecia
+   * @param  string $grupo       grupo, mesa
+   * @param  string $esp         especialista
+   * @param  string $vencido     mostrar vencidos?
+   * @param  string $periodo     periodo de fechas a mostrar
+   * @param  string $estado      filtro de estados
+   * @return array              data resultante
+   */
+  public function getProblemasDetalle($subgerencia='all',$grupo='all',$esp='all',$vencido='all',$periodo='all',$estado='all')
+  {
+    $wherePeriodo = (strlen ($periodo) === 10)
+           ? " and trunc(nvl(vv.modificacion,sysdate)) =  to_date('$periodo','mm-dd-yyyy')"
+           : " and trunc(nvl(vv.modificacion,sysdate)) between
+                          to_date('".substr($periodo, 0,strpos($periodo,' - '))."','mm-dd-yyyy') and
+                          to_date('".substr($periodo, (strpos($periodo,' - ')+3))."','mm-dd-yyyy')+1" ;
+
+    $whereSubgerencia = ($subgerencia<>'all') ? " and vv.subgerencia='$subgerencia'" : null ;
+    $whereGrupo = ($grupo<>'all') ? " and vv.grupo='$grupo'" : null ;
+    $whereEsp = ($esp<>'all') ? " and vv.asignado_a='$esp'" : null ;
+    if ($vencido<>'all') {
+      if ($vencido==0) {
+        $whereVencido = " and vv.exp=$vencido";
+      } else {
+        $whereVencido = " and vv.exp<>0";
+      }
+     }else {
+      $whereVencido = null;
+    }
+    $whereEstado = ($estado<>'all') ? " and vv.estado='$estado'" : null ;
+
+    $sqlProblemasDetalle="SELECT vv.sla,
+                                  vv.asignado_a esp,
+                                  vv.codigo,
+                                  vv.titulo,
+                                  vv.creacion,
+                                  vv.vencimiento,
+                                  vv.venc expirado,
+                                  vv.estado,
+                                  vv.grupo,
+                                  vv.subgerencia
+                             from bil_mon.vw_problemas_bill vv
+                            where 1=1
+                            $whereSubgerencia
+                            $whereGrupo
+                            $whereEsp
+                            $whereVencido
+                            $wherePeriodo
+                            $whereEstado
+                            order by vv.vencimiento asc";
+
+    return  $this->app['dbs']['itsm']->fetchAll($sqlProblemasDetalle);
   }
 }

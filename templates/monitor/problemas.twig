@@ -1,25 +1,190 @@
-<div class="btn" align="center">{{ titulo }}</div>
+{% set total,demorados,cumplidos,por_demorados,por_cumplidos = 0,0,0,0,0 %}
+{% set tieneEsp = 'all' %}
+
+<div class="btncito" align="center">{{ titulo }}</div>
+
+<table id="mon">
+  {% for resumen in dataProbResumen %}
+    {% if resumen.POR_CUMPLIDOS <= 94.99 %}
+      {% set color = 'red' %}
+    {% else %}
+      {% set color = null %}
+    {% endif %}
+  <tr align="center" >
+    <td align="right">
+      <font color="{{ color }}">{{ resumen.SUBGERENCIA|e }}</font>
+    </td>
+
+    {% if resumen.ESP is defined %}
+    <td align="right">
+      <font color="{{ color }}">{{ resumen.ESP|e }}</font>
+      {% set tieneEsp = resumen.ESP %}
+    </td>
+    {% endif %}
+
+    <td>
+      {% if resumen.TOTAL > 0 %}
+        <a href="{{ path('itsm_prob_det',
+                         {'subgerencia':resumen.SUBGERENCIA,
+                          'grupo':'all',
+                          'esp':tieneEsp,
+                          'vencido':'all',
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="{{ color }}">
+        {{ resumen.TOTAL|e }}
+        </font>
+        {% set total = total + resumen.TOTAL %}
+      {% endif %}
+    </td>
+    <td>
+      {% if resumen.DEMORADOS > 0 %}
+        <a href="{{ path('itsm_prob_det',
+                         {'subgerencia':resumen.SUBGERENCIA,
+                          'grupo':'all',
+                          'esp':tieneEsp,
+                          'vencido':1,
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="{{ color }}">
+          {{ resumen.DEMORADOS|e }}
+        </font>
+        </a>
+        {% set demorados = demorados + resumen.DEMORADOS %}
+      {% endif %}
+    </td>
+    <td>
+      {% if resumen.CUMPLIDOS > 0 %}
+        <a href="{{ path('itsm_prob_det',
+                         {'subgerencia':resumen.SUBGERENCIA,
+                          'grupo':'all',
+                          'esp':tieneEsp,
+                          'vencido':0,
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="{{ color }}">
+        {{ resumen.CUMPLIDOS|e }}
+        </font>
+        </a>
+        {% set cumplidos = cumplidos + resumen.CUMPLIDOS %}
+      {% endif %}
+    </td>
+    <td>
+      <font color="{{ color }}">
+      {% if resumen.POR_DEMORADOS > 0 %}
+        {{ resumen.POR_DEMORADOS|e }}
+      {% endif %}
+      </font>
+    </td>
+    <td>
+      <font color="{{ color }}">
+      {% if resumen.POR_CUMPLIDOS > 0 %}
+        {{ resumen.POR_CUMPLIDOS|e }}
+      {% endif %}
+      </font>
+    </td>
+  </tr>
+  {% endfor %}
+  <tfoot>
+  <tr align="center">
+    <td align="right">TOTAL</td>
+    {% if tieneEsp != 'all' %}
+    <td></td>
+    {% endif %}
+    <td>
+      <a href="{{ path('itsm_prob_det',
+                         {'subgerencia':'all',
+                          'grupo':'all',
+                          'esp':'all',
+                          'vencido':'all',
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="white">{{ total }}</font>
+      </a>
+    </td>
+    <td>
+      <a href="{{ path('itsm_prob_det',
+                         {'subgerencia':'all',
+                          'grupo':'all',
+                          'esp':'all',
+                          'vencido':'1',
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="white">{{ demorados }}</font>
+      </a>
+    </td>
+    <td>
+      <a href="{{ path('itsm_prob_det',
+                         {'subgerencia':'all',
+                          'grupo':'all',
+                          'esp':'all',
+                          'vencido':'0',
+                          'periodo':periodo,
+                          'estado':'all'}
+                        ) }}"
+           target="_blank" >
+        <font color="white">{{ cumplidos }}</font>
+      </a>
+    </td>
+    <td>
+      {% set por_demorados = (demorados/total)*100 %}
+      {{ por_demorados|round(2,'floor') }}
+    </td>
+    <td>
+      {% set por_cumplidos = (cumplidos/total)*100 %}
+      {{ por_cumplidos|round(2,'floor') }}
+    </td>
+  </tr>
+  </tfoot>
+  <thead>
+  <tr>
+    <th>SUBGERENCIA</th>
+    {% if tieneEsp != 'all' %}
+    <th>ESPECIALISTA</th>
+    {% endif %}
+    <th width="75">TOTAL</th>
+    <th width="75">DEMORADOS / REASIGNADOS</th>
+    <th width="75">CUMPLIDOS</th>
+    <th width="87">% DEMORADOS</th>
+    <th width="87">% CUMPLIDOS</th>
+  </tr>
+  </thead>
+</table>
+<br>
+
+{% if dataProbBill is defined %}
 <table id="mon">
   <tr>
-    <th>GRUPO</th>
-    <th>CREACION</th>
-    <th>PROB</th>
-    <th>ASIGNADO A</th>
     <th>SLA</th>
-    <th>DEMORA</th>
+    <th>ESP</th>
+    <th>PROB</th>
     <th>TITULO</th>
+    <th>CREACION</th>
+    <th>VENCIMIENTO</th>
     <th>ESTADO</th>
+    <th>GRUPO</th>
   </tr>
   {% for prob in dataProbBill %}
   <tr>
-    <td>{{ prob.GRUPO|e }}</td>
-    <td>{{ prob.CREACION|e }}</td>
-    <td>{{ prob.CODIGO|e }}</td>
-    <td>{{ prob.ASIGNADO_A|e }}</td>
     <td>{{ prob.SLA|e }}</td>
-    <td>{{ prob.DEMORA_DIAS|e }}</td>
+    <td>{{ prob.ASIGNADO_A|e }}</td>
+    <td>{{ prob.CODIGO|e }}</td>
     <td>{{ prob.TITULO|e }}</td>
+    <td>{{ prob.CREACION|e }}</td>
+    <td>{{ prob.ESTIMADO|e }}</td>
     <td>{{ prob.ESTADO|e }}</td>
+    <td>{{ prob.GRUPO|e }}</td>
   </tr>
   {% endfor %}
 </table>
+{% endif %}
